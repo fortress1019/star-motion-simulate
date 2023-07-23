@@ -1,5 +1,6 @@
 import pygame
 pygame.init()
+pygame.key.set_repeat(1000, 50)
 
 引力常数 = 6
 
@@ -28,9 +29,9 @@ class 天体动画精灵(pygame.sprite.Sprite):
         self.rect.center = self.天体.x, self.天体.y
 
     def 刷新(self):
-        self.rect.centerx = self.天体.x + rel[0]
-        self.rect.centery = self.天体.y + rel[1]
-        self.trail.append(self.rect.center)
+        self.rect.centerx = (self.天体.x + rel[0]) * scale
+        self.rect.centery = (self.天体.y + rel[1]) * scale
+        self.trail.append((self.天体.x, self.天体.y))
 
 def get距离(天体精灵1, 天体精灵2):
     x1, y1, x速度1, y速度1, 质量1 = 天体精灵1.天体.基本信息
@@ -47,15 +48,11 @@ def 移动全部天体(时间):
     要删除的天体 = []
     for 天体精灵1 in 天体动画精灵列表:
         天体1 = 天体精灵1.天体
-        if 天体1 in 要删除的天体:
-            continue
         x1, y1, x速度1, y速度1, 质量1 = 天体1.基本信息
         x加速度1, y加速度1 = 0, 0
         for 天体精灵2 in 天体动画精灵列表:
             天体2 = 天体精灵2.天体
-            if 天体2 in 要删除的天体:
-                continue
-            if 天体1 is 天体2:
+            if 天体精灵1 in 要删除的天体 or 天体精灵2 in 要删除的天体 or 天体1 is 天体2:
                 continue
             x2, y2, x速度2, y速度2, 质量2 = 天体2.基本信息
             x距离 = x2 - x1
@@ -67,7 +64,6 @@ def 移动全部天体(时间):
                 要删除的天体.append(轻天体)
                 重天体.天体.x速度 += 轻天体.天体.x速度
                 重天体.天体.y速度 += 轻天体.天体.y速度
-                continue
             力 = 引力常数 * 质量1 * 质量2 / (距离 ** 2)
             加速度 = 力 / 质量1
             x加速度1 += 加速度 * (x距离 / 距离)
@@ -84,18 +80,19 @@ def 移动全部天体(时间):
     for 动画精灵 in 要删除的天体:
         天体动画精灵列表.remove(动画精灵)
 
-screen = pygame.display.set_mode((900, 900))
+screen = pygame.display.set_mode((1000, 1000))
 
 天体动画精灵列表 = [
-    天体动画精灵(天体("planet1", 100, 100, 2, 0, 1000), 10, "green"),
-    天体动画精灵(天体("planet2", 800, 100, 0, 2, 1000), 10, "blue"),
-    天体动画精灵(天体("planet3", 800, 800, -2, 0, 1000), 10, "cyan"),
-    天体动画精灵(天体("planet4", 100, 800, 0, -2, 1000), 10, "yellow")
+    天体动画精灵(天体("planet1", 500, 100, 2, 0, 600), 10, "green"),
+    天体动画精灵(天体("planet2", 500, 900, 0.1, -3, 600), 10, "blue"),
+    天体动画精灵(天体("planet3", 100, 500, 0.1, 0, 600), 10, "cyan"),
 ]
 
 clock = pygame.time.Clock()
 drag = False
 rel = [0, 0]
+scale = 1
+paused = False
 running = True
 while running:
     screen.fill((0, 0, 0))
@@ -111,10 +108,19 @@ while running:
             if drag:
                 rel[0] += event.rel[0]
                 rel[1] += event.rel[1]
-    移动全部天体(2)
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_SPACE:
+                paused = not paused
+            elif event.key in (pygame.K_EQUALS, pygame.K_KP_PLUS):
+                scale += 0.01
+            elif event.key in (pygame.K_MINUS, pygame.K_KP_MINUS):
+                scale -= 0.01
+    if not paused:
+        移动全部天体(2)
     for sprite, trail in map(lambda xxx: (xxx, xxx.trail), 天体动画精灵列表):
         if len(trail) < 2:
             continue
+        trail = list(map(lambda point: ((point[0] + rel[0]) * scale, (point[1] + rel[1]) * scale), trail))
         pygame.draw.lines(screen, sprite.image.get_at(
             (sprite.image.get_width() // 2, sprite.image.get_height() // 2)), False, trail, 2)
     for 天体动画精灵 in 天体动画精灵列表:
