@@ -25,11 +25,11 @@ class 天体动画精灵(pygame.sprite.Sprite):
         self.image.fill((0, 0, 0, 0))
         pygame.draw.circle(self.image, 颜色, (半径, 半径), 半径, 0)
         self.rect = self.image.get_rect()
-        self.刷新rect属性()
+        self.rect.center = self.天体.x, self.天体.y
 
     def 刷新rect属性(self):
-        self.rect.centerx = self.天体.x
-        self.rect.centery = self.天体.y
+        self.rect.centerx = self.天体.x + rel[0]
+        self.rect.centery = self.天体.y + rel[1]
 
 def get距离(天体精灵1, 天体精灵2):
     x1, y1, x速度1, y速度1, 质量1 = 天体精灵1.天体.基本信息
@@ -87,19 +87,28 @@ def 移动全部天体(时间):
 screen = pygame.display.set_mode((900, 900))
 
 天体动画精灵列表 = [
-    天体动画精灵(天体("planet1", 450, 50, 1, 3, 1000), 10, "green"),
-    天体动画精灵(天体("planet2", 450, 850, -2, -1, 1000), 10, "blue"),
-    天体动画精灵(天体("planet3", 50, 450, 1, -2, 1000), 10, "cyan")
+    天体动画精灵(天体("planet1", 100, 100, 0, 2, 500), 10, "green"),
+    天体动画精灵(天体("planet2", 800, 450, 0, -2, 500), 10, "blue"),
+    天体动画精灵(天体("planet3", 450, 850, 0, -1, 1000), 10, "cyan")
 ]
 
 clock = pygame.time.Clock()
+drag = False
+rel = [0, 0]
 running = True
 while running:
     screen.fill((0, 0, 0))
-    clock.tick(30)
+    clock.tick(60)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            drag = True
+        elif event.type == pygame.MOUSEBUTTONUP:
+            drag = False
+        elif event.type == pygame.MOUSEMOTION:
+            rel[0] += event.rel[0]
+            rel[1] += event.rel[1]
     ########## 可更改：天体移动速度 ##########
     移动全部天体(1)
     for 天体动画精灵 in 天体动画精灵列表:
