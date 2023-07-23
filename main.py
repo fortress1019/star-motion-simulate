@@ -81,16 +81,16 @@ def 移动全部天体(时间):
         天体1.x速度 = (x - 临时x) / 时间
         天体1.y速度 = (y - 临时y) / 时间
         天体精灵1.刷新()
-    for 动画精灵 in 天体动画精灵列表:
-        if 动画精灵 in 要删除的天体:
-            天体动画精灵列表.remove(动画精灵)
+    for 动画精灵 in 要删除的天体:
+        天体动画精灵列表.remove(动画精灵)
 
 screen = pygame.display.set_mode((900, 900))
 
 天体动画精灵列表 = [
-    天体动画精灵(天体("planet1", 100, 100, 0, 2, 500), 10, "green"),
-    天体动画精灵(天体("planet2", 800, 450, 0, -2, 500), 10, "blue"),
-    天体动画精灵(天体("planet3", 450, 850, 0, -1, 1000), 10, "cyan")
+    天体动画精灵(天体("planet1", 100, 100, 2, 0, 1000), 10, "green"),
+    天体动画精灵(天体("planet2", 800, 100, 0, 2, 1000), 10, "blue"),
+    天体动画精灵(天体("planet3", 800, 800, -2, 0, 1000), 10, "cyan"),
+    天体动画精灵(天体("planet4", 100, 800, 0, -2, 1000), 10, "yellow")
 ]
 
 clock = pygame.time.Clock()
@@ -111,12 +111,12 @@ while running:
             if drag:
                 rel[0] += event.rel[0]
                 rel[1] += event.rel[1]
-    移动全部天体(1)
-    for 天体动画精灵 in 天体动画精灵列表:
-        screen.blit(天体动画精灵.image, 天体动画精灵.rect)
+    移动全部天体(2)
     for sprite, trail in map(lambda xxx: (xxx, xxx.trail), 天体动画精灵列表):
         if len(trail) < 2:
             continue
         pygame.draw.lines(screen, sprite.image.get_at(
             (sprite.image.get_width() // 2, sprite.image.get_height() // 2)), False, trail, 2)
+    for 天体动画精灵 in 天体动画精灵列表:
+        screen.blit(天体动画精灵.image, 天体动画精灵.rect)
     pygame.display.flip()
