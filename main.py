@@ -2,90 +2,95 @@ import pygame
 pygame.init()
 pygame.key.set_repeat(1000, 50)
 
-引力常数 = 6
+G = 6
 
-class 天体:
-    def __init__(self, 名称, x, y, x速度, y速度, 质量):
-        self.名称 = 名称
+class StarObject:
+    def __init__(self, x, y, vx, vy, mass):
         self.x = x
         self.y = y
-        self.x速度 = x速度
-        self.y速度 = y速度
-        self.质量 = 质量
+        self.vx = vx
+        self.vy = vy
+        self.mass = mass
 
     @property
-    def 基本信息(self):
-        return self.x, self.y, self.x速度, self.y速度, self.质量
+    def info(self):
+        return self.x, self.y, self.vx, self.vy, self.mass
 
-class 天体动画精灵(pygame.sprite.Sprite):
-    def __init__(self, 天体, 半径, 颜色):
+class StarSprite(pygame.sprite.Sprite):
+    def __init__(self, name, star, radius, color):
         pygame.sprite.Sprite.__init__(self)
-        self.天体 = 天体
+        self.name = name
+        self.star = star
+        self.radius = radius
+        self.color = color
         self.trail = []
-        self.image = pygame.Surface((半径 * 2, 半径 * 2)).convert_alpha()
+        self.image = pygame.Surface((radius * 2, radius * 2)).convert_alpha()
         self.image.fill((0, 0, 0, 0))
-        pygame.draw.circle(self.image, 颜色, (半径, 半径), 半径, 0)
+        pygame.draw.circle(self.image, color, (radius, radius), radius, 0)
         self.rect = self.image.get_rect()
-        self.rect.center = self.天体.x, self.天体.y
+        self.rect.center = self.star.x, self.star.y
 
-    def 刷新(self):
-        self.rect.centerx = (self.天体.x + rel[0]) * scale
-        self.rect.centery = (self.天体.y + rel[1]) * scale
-        self.trail.append((self.天体.x, self.天体.y))
+    def flush(self):
+        self.rect.centerx = (self.star.x + rel[0]) * scale
+        self.rect.centery = (self.star.y + rel[1]) * scale
+        self.trail.append((self.star.x, self.star.y))
 
-def get距离(天体精灵1, 天体精灵2):
-    x1, y1, x速度1, y速度1, 质量1 = 天体精灵1.天体.基本信息
-    x2, y2, x速度2, y速度2, 质量2 = 天体精灵2.天体.基本信息
-    x距离 = x2 - x1
-    y距离 = y2 - y1
-    return (x距离 ** 2 + y距离 ** 2) ** 0.5
+def get_distance(sprite1, sprite2):
+    x1, y1 = sprite1.star.x, sprite1.star.y
+    x2, y2 = sprite2.star.x, sprite2.star.y
+    dx = x2 - x1
+    dy = y2 - y1
+    return (dx ** 2 + dy ** 2) ** 0.5
 
-def is碰撞(天体精灵1, 天体精灵2):
-    半径1, 半径2 = 天体精灵1.image.get_width(), 天体精灵2.image.get_height()
-    return 半径1 + 半径2 > get距离(天体精灵1, 天体精灵2)
+def is_collide(sprite1, sprite2):
+    半径1, 半径2 = sprite1.radius, sprite2.radius
+    return 半径1 + 半径2 > get_distance(sprite1, sprite2)
 
-def 移动全部天体(时间):
-    要删除的天体 = []
-    for 天体精灵1 in 天体动画精灵列表:
-        天体1 = 天体精灵1.天体
-        x1, y1, x速度1, y速度1, 质量1 = 天体1.基本信息
-        x加速度1, y加速度1 = 0, 0
-        for 天体精灵2 in 天体动画精灵列表:
-            天体2 = 天体精灵2.天体
-            if 天体精灵1 in 要删除的天体 or 天体精灵2 in 要删除的天体 or 天体1 is 天体2:
+def move(t):
+    sprites_to_delete = []
+    for sprite1 in sprites:
+        star1 = sprite1.star
+        x1, y1, vx1, vy1, m1 = star1.info
+        ax1, ay1 = 0, 0
+        for sprite2 in sprites:
+            star2 = sprite2.star
+            if sprite1 in sprites_to_delete or sprite2 in sprites_to_delete:
+                break
+            if star1 is star2:
                 continue
-            x2, y2, x速度2, y速度2, 质量2 = 天体2.基本信息
-            x距离 = x2 - x1
-            y距离 = y2 - y1
-            距离 = get距离(天体精灵1, 天体精灵2)
-            if is碰撞(天体精灵1, 天体精灵2):
-                重天体 = 天体精灵1 if 天体1.质量 > 天体2.质量 else 天体精灵2
-                轻天体 = 天体精灵1 if 重天体 is 天体2 else 天体精灵2
-                要删除的天体.append(轻天体)
-                重天体.天体.x速度 += 轻天体.天体.x速度
-                重天体.天体.y速度 += 轻天体.天体.y速度
-            力 = 引力常数 * 质量1 * 质量2 / (距离 ** 2)
-            加速度 = 力 / 质量1
-            x加速度1 += 加速度 * (x距离 / 距离)
-            y加速度1 += 加速度 * (y距离 / 距离)
+            x2, y2, vx2, vy2, m2 = star2.info
+            dx = x2 - x1
+            dy = y2 - y1
+            r = get_distance(sprite1, sprite2)
+            if is_collide(sprite1, sprite2):
+                heavier = sprite1 if star1.mass > star2.mass else sprite2
+                lighter = sprite1 if heavier is star2 else sprite2
+                sprites_to_delete.append(lighter)
+                heavier.star.vx += lighter.star.vx
+                heavier.star.vy += lighter.star.vy
+            f = G * m1 * m2 / (r ** 2)
+            accel = f / m1
+            ax1 += accel * (dx / r)
+            ay1 += accel * (dy / r)
         x, y = (
-            x1 + x速度1 * 时间 + 0.5 * x加速度1 * (时间 ** 2),
-            y1 + y速度1 * 时间 + 0.5 * y加速度1 * (时间 ** 2)
+            x1 + vx1 * t + 0.5 * ax1 * (t ** 2),
+            y1 + vy1 * t + 0.5 * ay1 * (t ** 2)
         )
-        临时x, 临时y = 天体1.x, 天体1.y
-        天体1.x, 天体1.y = x, y
-        天体1.x速度 = (x - 临时x) / 时间
-        天体1.y速度 = (y - 临时y) / 时间
-        天体精灵1.刷新()
-    for 动画精灵 in 要删除的天体:
-        天体动画精灵列表.remove(动画精灵)
+        tempx, tempy = star1.x, star1.y
+        star1.x, star1.y = x, y
+        star1.vx = (x - tempx) / t
+        star1.vy = (y - tempy) / t
+        sprite1.flush()
+    for sprite in sprites_to_delete:
+        sprites.remove(sprite)
 
 screen = pygame.display.set_mode((1000, 1000))
 
-天体动画精灵列表 = [
-    天体动画精灵(天体("planet1", 500, 100, 2, 0, 600), 10, "green"),
-    天体动画精灵(天体("planet2", 500, 900, 0.1, -3, 600), 10, "blue"),
-    天体动画精灵(天体("planet3", 100, 500, 0.1, 0, 600), 10, "cyan"),
+sprites = [
+    StarSprite("planet1", StarObject(100, 100, 2, 0, 1000), 10, "green"),
+    StarSprite("planet2", StarObject(800, 100, 0, 2, 1000), 10, "blue"),
+    StarSprite("planet3", StarObject(800, 800, -2, 0, 1000), 10, "cyan"),
+    StarSprite("planet4", StarObject(100, 800, 0, -2, 1000), 10, "yellow")
 ]
 
 clock = pygame.time.Clock()
@@ -116,13 +121,12 @@ while running:
             elif event.key in (pygame.K_MINUS, pygame.K_KP_MINUS):
                 scale -= 0.01
     if not paused:
-        移动全部天体(2)
-    for sprite, trail in map(lambda xxx: (xxx, xxx.trail), 天体动画精灵列表):
+        move(2)
+    for sprite, trail in map(lambda xxx: (xxx, xxx.trail), sprites):
         if len(trail) < 2:
             continue
         trail = list(map(lambda point: ((point[0] + rel[0]) * scale, (point[1] + rel[1]) * scale), trail))
-        pygame.draw.lines(screen, sprite.image.get_at(
-            (sprite.image.get_width() // 2, sprite.image.get_height() // 2)), False, trail, 2)
-    for 天体动画精灵 in 天体动画精灵列表:
-        screen.blit(天体动画精灵.image, 天体动画精灵.rect)
+        pygame.draw.lines(screen, sprite.color, False, trail, 2)
+    for sprite in sprites:
+        screen.blit(sprite.image, sprite.rect)
     pygame.display.flip()
