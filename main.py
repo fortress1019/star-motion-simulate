@@ -1,8 +1,7 @@
 import pygame
 pygame.init()
 
-########## 可更改：引力的大小 ##########
-引力常数 = 10
+引力常数 = 6
 
 class 天体:
     def __init__(self, 名称, x, y, x速度, y速度, 质量):
@@ -21,15 +20,17 @@ class 天体动画精灵(pygame.sprite.Sprite):
     def __init__(self, 天体, 半径, 颜色):
         pygame.sprite.Sprite.__init__(self)
         self.天体 = 天体
+        self.trail = []
         self.image = pygame.Surface((半径 * 2, 半径 * 2)).convert_alpha()
         self.image.fill((0, 0, 0, 0))
         pygame.draw.circle(self.image, 颜色, (半径, 半径), 半径, 0)
         self.rect = self.image.get_rect()
         self.rect.center = self.天体.x, self.天体.y
 
-    def 刷新rect属性(self):
+    def 刷新(self):
         self.rect.centerx = self.天体.x + rel[0]
         self.rect.centery = self.天体.y + rel[1]
+        self.trail.append(self.rect.center)
 
 def get距离(天体精灵1, 天体精灵2):
     x1, y1, x速度1, y速度1, 质量1 = 天体精灵1.天体.基本信息
@@ -79,7 +80,7 @@ def 移动全部天体(时间):
         天体1.x, 天体1.y = x, y
         天体1.x速度 = (x - 临时x) / 时间
         天体1.y速度 = (y - 临时y) / 时间
-        天体精灵1.刷新rect属性()
+        天体精灵1.刷新()
     for 动画精灵 in 天体动画精灵列表:
         if 动画精灵 in 要删除的天体:
             天体动画精灵列表.remove(动画精灵)
@@ -98,7 +99,7 @@ rel = [0, 0]
 running = True
 while running:
     screen.fill((0, 0, 0))
-    clock.tick(60)
+    clock.tick(30)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
@@ -107,10 +108,15 @@ while running:
         elif event.type == pygame.MOUSEBUTTONUP:
             drag = False
         elif event.type == pygame.MOUSEMOTION:
-            rel[0] += event.rel[0]
-            rel[1] += event.rel[1]
-    ########## 可更改：天体移动速度 ##########
+            if drag:
+                rel[0] += event.rel[0]
+                rel[1] += event.rel[1]
     移动全部天体(1)
     for 天体动画精灵 in 天体动画精灵列表:
         screen.blit(天体动画精灵.image, 天体动画精灵.rect)
+    for sprite, trail in map(lambda xxx: (xxx, xxx.trail), 天体动画精灵列表):
+        if len(trail) < 2:
+            continue
+        pygame.draw.lines(screen, sprite.image.get_at(
+            (sprite.image.get_width() // 2, sprite.image.get_height() // 2)), False, trail, 2)
     pygame.display.flip()
