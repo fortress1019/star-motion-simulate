@@ -35,6 +35,31 @@ class StarSprite(pygame.sprite.Sprite):
         self.rect.centery = (self.star.y + rel[1]) * scale
         self.trail.append((self.star.x, self.star.y))
 
+    def __repr__(self):
+        return self.name
+
+    __str__ = __repr__
+
+class Message(pygame.sprite.Sprite):
+    def __init__(self, text, pos):
+        pygame.sprite.Sprite.__init__(self)
+        self._text = text
+        self.image = font.render(text, False, (255, 255, 255))
+        self.rect = self.image.get_rect()
+        self.rect.topright = pos
+
+    @property
+    def text(self):
+        return self._text
+
+    @text.setter
+    def text(self, text):
+        pos = self.rect.topright
+        self._text = text
+        self.image = font.render(text, False, (255, 255, 255))
+        self.rect = self.image.get_rect()
+        self.rect.topright = pos
+
 def get_distance(sprite1, sprite2):
     x1, y1 = sprite1.star.x, sprite1.star.y
     x2, y2 = sprite2.star.x, sprite2.star.y
@@ -43,8 +68,8 @@ def get_distance(sprite1, sprite2):
     return (dx ** 2 + dy ** 2) ** 0.5
 
 def is_collide(sprite1, sprite2):
-    半径1, 半径2 = sprite1.radius, sprite2.radius
-    return 半径1 + 半径2 > get_distance(sprite1, sprite2)
+    r1, r2 = sprite1.radius, sprite2.radius
+    return r1 + r2 > get_distance(sprite1, sprite2)
 
 def move(t):
     sprites_to_delete = []
@@ -68,6 +93,8 @@ def move(t):
                 sprites_to_delete.append(lighter)
                 heavier.star.vx += lighter.star.vx
                 heavier.star.vy += lighter.star.vy
+                message.text = f"{heavier} 和 {lighter} 相撞"
+                continue
             f = G * m1 * m2 / (r ** 2)
             accel = f / m1
             ax1 += accel * (dx / r)
@@ -84,6 +111,7 @@ def move(t):
     for sprite in sprites_to_delete:
         sprites.remove(sprite)
 
+size = width, height = (1000, 1000)
 screen = pygame.display.set_mode((1000, 1000))
 
 sprites = [
@@ -92,6 +120,9 @@ sprites = [
     StarSprite("planet3", StarObject(800, 800, -2, 0, 1000), 10, "cyan"),
     StarSprite("planet4", StarObject(100, 800, 0, -2, 1000), 10, "yellow")
 ]
+
+font = pygame.font.SysFont("Microsoft YaHei UI", 30)
+message = Message("", (width - 10, 10))
 
 clock = pygame.time.Clock()
 drag = False
@@ -129,4 +160,5 @@ while running:
         pygame.draw.lines(screen, sprite.color, False, trail, 2)
     for sprite in sprites:
         screen.blit(sprite.image, sprite.rect)
+    screen.blit(message.image, message.rect)
     pygame.display.flip()

@@ -4,11 +4,13 @@
 
 这是一个天体运动模拟程序。
 
-FishC 支持链接：https://fishc.com.cn/thread-231221-1-1.html
+**相关链接**
+
+[预告通知](https://fishc.com.cn/thread-231221-1-1.html)
 
 求支持！！！计算天体坐标那个是我好不容易在网上找到的算法……😑
 
-> 求评分
+> 求评分！您的评分是我最大的动力
 
 ## 版本信息
 
@@ -21,3 +23,5 @@ FishC 支持链接：https://fishc.com.cn/thread-231221-1-1.html
 这样的话可以使用 `git pull` 来更新。
 
 第二种：可以点击 “Code” 旁边的 “Download Zip”  
+
+第三种：如果以上方法都不可行，请[联系我](https://fishc.com.cn/space-uid-1410382.html)
