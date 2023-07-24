@@ -39,3 +39,12 @@ pip install pyini pygame
 ### 加载模拟
 
 在 `config/config.ini` 里找到 <span style="color: #9b2393; font-family: 'Consolas', 'Courier New';"><b>[simulation]</b></span> 部分，将 <span style="color: #9b2393; font-family: 'Consolas', 'Courier New';">file</span> 选项更改为你想加载的模拟（在 `simulation` 目录下有很多模拟，随便选择一个，复制它的文件名，并且*去掉扩展名*粘贴到 <span style="font-family: 'Consolas', 'Courier New';">=</span> 后面。
+
+## 操作说明
+
+> 这个部分介绍在程序运行起来后，该如何操作它。
+
+- 放大 / 缩小：鼠标滚轮 / + 和 - 键
+- 移动视角：鼠标拖动 / ↑↓←→
+- 暂停：空格键
+- 导出为图片：Ctrl+S 组合键

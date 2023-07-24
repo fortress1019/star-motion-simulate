@@ -1,6 +1,9 @@
+import os
+
 import pygame
 import pyini
-import os
+import tkinter as tk
+import tkinter.filedialog as fd
 from time import sleep
 from threading import Thread
 pygame.init()
@@ -71,7 +74,7 @@ def get_distance(sprite1, sprite2):
     dy = y2 - y1
     return (dx ** 2 + dy ** 2) ** 0.5
 
-def disappear_message(delay=2, interval=0.09):
+def disappear_message(delay=5, interval=0.09):
     sleep(delay)
     while message.text:
         try:
@@ -148,6 +151,7 @@ with open(f"config/language_{config['language']['default']}.ini", "r", encoding=
     language = pyini.ConfigParser(f.read())
 
 size = width, height = (1000, 1000)
+movement = 10
 screen = pygame.display.set_mode((1000, 1000))
 
 pygame.display.set_caption("Pygame 天体运动模拟")
@@ -167,6 +171,19 @@ running = True
 while running:
     screen.fill((0, 0, 0))
     clock.tick(30)
+    if not paused:
+        move(2)
+    for sprite, trail in map(lambda xxx: (xxx, xxx.trail), sprites):
+        if len(trail) < 2:
+            continue
+        trail = list(map(lambda point: ((point[0] + rel[0]) * scale, (point[1] + rel[1]) * scale), trail))
+        pygame.draw.lines(screen, sprite.color, False, trail, 2)
+    for sprite in sprites:
+        image = sprite.image
+        image = pygame.transform.scale(image, (sprite.radius * 2 * scale,) * 2)
+        screen.blit(image, sprite.rect)
+    screen.blit(message.image, message.rect)
+    pygame.display.flip()
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
@@ -186,29 +203,27 @@ while running:
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
                 paused = not paused
-            elif event.key == pygame.K_LEFT:
-                change_view(5, 0)
-            elif event.key == pygame.K_RIGHT:
-                change_view(-5, 0)
-            elif event.key == pygame.K_UP:
-                change_view(0, 5)
-            elif event.key == pygame.K_DOWN:
-                change_view(0, -5)
+            elif event.mod & pygame.KMOD_CTRL and event.key == pygame.K_s:
+                root = tk.Tk()
+                root.withdraw()
+                filepath = fd.asksaveasfilename(
+                    initialdir=os.path.dirname(__file__),
+                    defaultextension=".png",
+                    filetypes=(("png", "*.png"), )
+                )
+                if filepath:
+                    pygame.image.save(screen, filepath)
+                root.destroy()
+            elif event.key in (pygame.K_LEFT, pygame.K_a, pygame.K_KP_4):
+                change_view(movement, 0)
+            elif event.key in (pygame.K_RIGHT, pygame.K_d, pygame.K_KP_6):
+                change_view(-movement, 0)
+            elif event.key in (pygame.K_UP, pygame.K_w, pygame.K_KP_8):
+                change_view(0, movement)
+            elif event.key in (pygame.K_DOWN, pygame.K_s, pygame.K_KP_2):
+                change_view(0, -movement)
             elif event.key in (pygame.K_EQUALS, pygame.K_KP_PLUS):
                 zoom(1)
             elif event.key in (pygame.K_MINUS, pygame.K_KP_MINUS):
                 zoom(-1)
-    if not paused:
-        move(2)
-    for sprite, trail in map(lambda xxx: (xxx, xxx.trail), sprites):
-        if len(trail) < 2:
-            continue
-        trail = list(map(lambda point: ((point[0] + rel[0]) * scale, (point[1] + rel[1]) * scale), trail))
-        pygame.draw.lines(screen, sprite.color, False, trail, 2)
-    for sprite in sprites:
-        image = sprite.image
-        image = pygame.transform.scale(image, (sprite.radius * 2 * scale, ) * 2)
-        screen.blit(image, sprite.rect)
-    screen.blit(message.image, message.rect)
-    pygame.display.flip()
 pygame.quit()
