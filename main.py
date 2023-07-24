@@ -77,6 +77,8 @@ def move(t):
         star1 = sprite1.star
         x1, y1, vx1, vy1, m1 = star1.info
         ax1, ay1 = 0, 0
+        if sprite1 in sprites_to_delete:
+            continue
         for sprite2 in sprites:
             star2 = sprite2.star
             if sprite1 in sprites_to_delete or sprite2 in sprites_to_delete:
@@ -89,12 +91,12 @@ def move(t):
             r = get_distance(sprite1, sprite2)
             if is_collide(sprite1, sprite2):
                 heavier = sprite1 if star1.mass > star2.mass else sprite2
-                lighter = sprite1 if heavier is star2 else sprite2
+                lighter = sprite2 if heavier is star2 else sprite1
                 sprites_to_delete.append(lighter)
                 heavier.star.vx += lighter.star.vx
                 heavier.star.vy += lighter.star.vy
                 message.text = f"{heavier} 和 {lighter} 相撞"
-                continue
+                break
             f = G * m1 * m2 / (r ** 2)
             accel = f / m1
             ax1 += accel * (dx / r)
@@ -162,3 +164,4 @@ while running:
         screen.blit(sprite.image, sprite.rect)
     screen.blit(message.image, message.rect)
     pygame.display.flip()
+pygame.quit()
