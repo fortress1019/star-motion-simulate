@@ -28,11 +28,11 @@ pip install pyini pygame
 
 第二种：可以点击 “Code” 旁边的 “Download Zip”  
 
-第三种：如果以上方法都不可行，请[联系我](https://fishc.com.cn/space-uid-1410382.html)
+第三种：如果以上方法都不可行，请[提出 Issue](https://github.com/dddddgz/star-motion-simulate/issues/new/choose)
 
 ## 项目配置
 
-### 使用设置
+### 语言设置
 
 如果默认的语言（英语）不是你希望显示的语言（~~肯定不是~~），则你可以打开 `config/config.ini`，找到 <span style="color: #9b2393; font-family: 'Consolas', 'Courier New';"><b>[language]</b></span> 下的 <span style="color: #9b2393; font-family: 'Consolas', 'Courier New';">default</span> 选项，将它更改为你希望显示语言（如 zh-cn）。
 

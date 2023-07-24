@@ -127,6 +127,20 @@ def is_collide(sprite1, sprite2):
     r1, r2 = sprite1.radius, sprite2.radius
     return r1 + r2 > get_distance(sprite1, sprite2)
 
+def zoom(direction, each=0.01):
+    global scale
+    if direction > 0:
+        scale += each
+    elif direction < 0:
+        scale -= each
+    message.text = language["game"]["zoom"] % scale
+    Thread(target=disappear_message).start()
+
+def change_view(move_x, move_y):
+    rel[0] += move_x
+    rel[1] += move_y
+    message.text = language["game"]["rel"] % str(tuple(rel))
+
 with open("config/config.ini", "r", encoding="utf-8") as f:
     config = pyini.ConfigParser(f.read())
 
@@ -135,6 +149,8 @@ with open(f"config/language_{config['language']['default']}.ini", "r", encoding=
 
 size = width, height = (1000, 1000)
 screen = pygame.display.set_mode((1000, 1000))
+
+pygame.display.set_caption("Pygame 天体运动模拟")
 
 with open(f"simulation/{config['simulation']['file']}.fishc", "r", encoding="utf-8") as f:
     sprites = eval(f.read())
@@ -155,20 +171,33 @@ while running:
         if event.type == pygame.QUIT:
             running = False
         elif event.type == pygame.MOUSEBUTTONDOWN:
-            drag = True
+            if event.button == 1:
+                drag = True
         elif event.type == pygame.MOUSEBUTTONUP:
-            drag = False
+            if event.button == 1:
+                drag = False
+            elif event.button == 4:
+                zoom(1)
+            else:
+                zoom(-1)
         elif event.type == pygame.MOUSEMOTION:
             if drag:
-                rel[0] += event.rel[0]
-                rel[1] += event.rel[1]
+                change_view(*event.rel)
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
                 paused = not paused
+            elif event.key == pygame.K_LEFT:
+                change_view(5, 0)
+            elif event.key == pygame.K_RIGHT:
+                change_view(-5, 0)
+            elif event.key == pygame.K_UP:
+                change_view(0, 5)
+            elif event.key == pygame.K_DOWN:
+                change_view(0, -5)
             elif event.key in (pygame.K_EQUALS, pygame.K_KP_PLUS):
-                scale += 0.01
+                zoom(1)
             elif event.key in (pygame.K_MINUS, pygame.K_KP_MINUS):
-                scale -= 0.01
+                zoom(-1)
     if not paused:
         move(2)
     for sprite, trail in map(lambda xxx: (xxx, xxx.trail), sprites):
