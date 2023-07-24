@@ -1,4 +1,7 @@
 import pygame
+import pyini
+from time import sleep
+from threading import Thread
 pygame.init()
 pygame.key.set_repeat(1000, 50)
 
@@ -67,9 +70,10 @@ def get_distance(sprite1, sprite2):
     dy = y2 - y1
     return (dx ** 2 + dy ** 2) ** 0.5
 
-def is_collide(sprite1, sprite2):
-    r1, r2 = sprite1.radius, sprite2.radius
-    return r1 + r2 > get_distance(sprite1, sprite2)
+def disappear_message(interval=0.1):
+    while message.text:
+        message.text = message.text[:-1]
+        sleep(interval)
 
 def move(t):
     sprites_to_delete = []
@@ -95,7 +99,8 @@ def move(t):
                 sprites_to_delete.append(lighter)
                 heavier.star.vx += lighter.star.vx
                 heavier.star.vy += lighter.star.vy
-                message.text = f"{heavier} 和 {lighter} 相撞"
+                message.text = language["star"]["collide"] % (heavier, lighter)
+                Thread(target=disappear_message).start()
                 break
             f = G * m1 * m2 / (r ** 2)
             accel = f / m1
@@ -113,6 +118,10 @@ def move(t):
     for sprite in sprites_to_delete:
         sprites.remove(sprite)
 
+def is_collide(sprite1, sprite2):
+    r1, r2 = sprite1.radius, sprite2.radius
+    return r1 + r2 > get_distance(sprite1, sprite2)
+
 size = width, height = (1000, 1000)
 screen = pygame.display.set_mode((1000, 1000))
 
@@ -122,6 +131,9 @@ sprites = [
     StarSprite("planet3", StarObject(800, 800, -2, 0, 1000), 10, "cyan"),
     StarSprite("planet4", StarObject(100, 800, 0, -2, 1000), 10, "yellow")
 ]
+
+with open("config/language.ini", "r", encoding="utf-8") as f:
+    language = pyini.ConfigParser(f.read())
 
 font = pygame.font.SysFont("Microsoft YaHei UI", 30)
 message = Message("", (width - 10, 10))
@@ -161,7 +173,9 @@ while running:
         trail = list(map(lambda point: ((point[0] + rel[0]) * scale, (point[1] + rel[1]) * scale), trail))
         pygame.draw.lines(screen, sprite.color, False, trail, 2)
     for sprite in sprites:
-        screen.blit(sprite.image, sprite.rect)
+        image = sprite.image
+        image = pygame.transform.scale(image, (sprite.radius * 2 * scale, ) * 2)
+        screen.blit(image, sprite.rect)
     screen.blit(message.image, message.rect)
     pygame.display.flip()
 pygame.quit()
