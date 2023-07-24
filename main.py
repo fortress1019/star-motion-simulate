@@ -154,6 +154,7 @@ size = width, height = (1000, 1000)
 movement = 10
 screen = pygame.display.set_mode((1000, 1000))
 
+pygame.display.set_icon(pygame.image.load(config["window"]["icon"]))
 pygame.display.set_caption("Pygame 天体运动模拟")
 
 with open(f"simulation/{config['simulation']['file']}.fishc", "r", encoding="utf-8") as f:
