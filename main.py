@@ -70,7 +70,8 @@ def get_distance(sprite1, sprite2):
     dy = y2 - y1
     return (dx ** 2 + dy ** 2) ** 0.5
 
-def disappear_message(interval=0.1):
+def disappear_message(delay=2, interval=0.09):
+    sleep(delay)
     while message.text:
         message.text = message.text[:-1]
         sleep(interval)
@@ -122,6 +123,12 @@ def is_collide(sprite1, sprite2):
     r1, r2 = sprite1.radius, sprite2.radius
     return r1 + r2 > get_distance(sprite1, sprite2)
 
+with open("config/config.ini", "r", encoding="utf-8") as f:
+    config = pyini.ConfigParser(f.read())
+
+with open(f"config/{config['language']['default']}", "r", encoding="utf-8") as f:
+    language = pyini.ConfigParser(f.read())
+
 size = width, height = (1000, 1000)
 screen = pygame.display.set_mode((1000, 1000))
 
@@ -131,9 +138,6 @@ sprites = [
     StarSprite("planet3", StarObject(800, 800, -2, 0, 1000), 10, "cyan"),
     StarSprite("planet4", StarObject(100, 800, 0, -2, 1000), 10, "yellow")
 ]
-
-with open("config/language.ini", "r", encoding="utf-8") as f:
-    language = pyini.ConfigParser(f.read())
 
 font = pygame.font.SysFont("Microsoft YaHei UI", 30)
 message = Message("", (width - 10, 10))
