@@ -100,7 +100,7 @@ def move(t):
             r = get_distance(sprite1, sprite2)
             if is_collide(sprite1, sprite2):
                 heavier = sprite1 if star1.mass > star2.mass else sprite2
-                lighter = sprite2 if heavier is star2 else sprite1
+                lighter = sprite2 if heavier is sprite1 else sprite1
                 sprites_to_delete.append(lighter)
                 heavier.star.vx += lighter.star.vx
                 heavier.star.vy += lighter.star.vy
@@ -130,7 +130,7 @@ def is_collide(sprite1, sprite2):
 with open("config/config.ini", "r", encoding="utf-8") as f:
     config = pyini.ConfigParser(f.read())
 
-with open(f"config/language_{config['language']['simulation']}.ini", "r", encoding="utf-8") as f:
+with open(f"config/language_{config['language']['default']}.ini", "r", encoding="utf-8") as f:
     language = pyini.ConfigParser(f.read())
 
 size = width, height = (1000, 1000)
