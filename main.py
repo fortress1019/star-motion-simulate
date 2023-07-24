@@ -152,7 +152,10 @@ with open(f"config/language_{config['language']['default']}.ini", "r", encoding=
 
 size = width, height = (1000, 1000)
 movement = 10
-screen = pygame.display.set_mode((1000, 1000))
+screen = pygame.display.set_mode(
+    (width // (int(config["window"]["screen_zoom"]) // 100),
+     height // (int(config["window"]["screen_zoom"]) // 100))
+)
 
 pygame.display.set_icon(pygame.image.load(config["window"]["icon"]))
 pygame.display.set_caption("Pygame 天体运动模拟")
