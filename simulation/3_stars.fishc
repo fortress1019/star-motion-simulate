@@ -1,0 +1,5 @@
+[
+    StarSprite("planet1", StarObject(100, 100, 0, 2, 500), 10, "green"),
+    StarSprite("planet2", StarObject(800, 450, 0, -2, 500), 10, "blue"),
+    StarSprite("planet3", StarObject(450, 850, 0, -1, 1000), 10, "cyan")
+]

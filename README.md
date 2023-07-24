@@ -16,8 +16,6 @@ pip install pyini pygame
 
 > 求支持！求评分！您的评分是我最大的动力！
 
-[![](https://img1.imgtp.com/2023/07/24/4KWvJAWB.png)](https://github.com/dddddgz/star-motion-simulate/issues/new/choose)
-
 ## 版本信息
 
 目前仍未发布正式版。下载方式：
@@ -32,8 +30,12 @@ pip install pyini pygame
 
 第三种：如果以上方法都不可行，请[联系我](https://fishc.com.cn/space-uid-1410382.html)
 
-## 设置步骤
+## 项目配置
 
-### 语言设置
+### 使用设置
 
-如果默认的语言（简体中文）不是你的语言，则你可以打开 `config` 目录，在里面找到 config.ini，设置你的语言。
+如果默认的语言（英语）不是你希望显示的语言（~~肯定不是~~），则你可以打开 `config/config.ini`，找到 <span style="color: #9b2393; font-family: 'Consolas', 'Courier New';"><b>[language]</b></span> 下的 <span style="color: #9b2393; font-family: 'Consolas', 'Courier New';">default</span> 选项，将它更改为你希望显示语言（如 zh-cn）。
+
+### 加载模拟
+
+在 `config/config.ini` 里找到 <span style="color: #9b2393; font-family: 'Consolas', 'Courier New';"><b>[simulation]</b></span> 部分，将 <span style="color: #9b2393; font-family: 'Consolas', 'Courier New';">file</span> 选项更改为你想加载的模拟（在 `simulation` 目录下有很多模拟，随便选择一个，复制它的文件名，并且*去掉扩展名*粘贴到 <span style="font-family: 'Consolas', 'Courier New';">=</span> 后面。

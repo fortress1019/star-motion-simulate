@@ -1,5 +1,6 @@
 import pygame
 import pyini
+import os
 from time import sleep
 from threading import Thread
 pygame.init()
@@ -73,7 +74,10 @@ def get_distance(sprite1, sprite2):
 def disappear_message(delay=2, interval=0.09):
     sleep(delay)
     while message.text:
-        message.text = message.text[:-1]
+        try:
+            message.text = message.text[:-1]
+        except pygame.error:
+            return
         sleep(interval)
 
 def move(t):
@@ -126,18 +130,14 @@ def is_collide(sprite1, sprite2):
 with open("config/config.ini", "r", encoding="utf-8") as f:
     config = pyini.ConfigParser(f.read())
 
-with open(f"config/{config['language']['default']}", "r", encoding="utf-8") as f:
+with open(f"config/language_{config['language']['simulation']}.ini", "r", encoding="utf-8") as f:
     language = pyini.ConfigParser(f.read())
 
 size = width, height = (1000, 1000)
 screen = pygame.display.set_mode((1000, 1000))
 
-sprites = [
-    StarSprite("planet1", StarObject(100, 100, 2, 0, 1000), 10, "green"),
-    StarSprite("planet2", StarObject(800, 100, 0, 2, 1000), 10, "blue"),
-    StarSprite("planet3", StarObject(800, 800, -2, 0, 1000), 10, "cyan"),
-    StarSprite("planet4", StarObject(100, 800, 0, -2, 1000), 10, "yellow")
-]
+with open(f"simulation/{config['simulation']['file']}.fishc", "r", encoding="utf-8") as f:
+    sprites = eval(f.read())
 
 font = pygame.font.SysFont("Microsoft YaHei UI", 30)
 message = Message("", (width - 10, 10))
