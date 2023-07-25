@@ -66,7 +66,7 @@ class Message(pygame.sprite.Sprite):
         self.image = font.render(self._text, False, (255, 255, 255))
         self.image = pygame.transform.scale(self.image, [x / SCALE for x in self.image.get_size()])
         self.rect = self.image.get_rect()
-        self.rect.topright = [x / SCALE for x in pos]
+        self.rect.topright = pos
 
 def get_distance(sprite1, sprite2):
     x1, y1 = sprite1.star.x, sprite1.star.y
@@ -151,16 +151,18 @@ with open("config/config.ini", "r", encoding="utf-8") as f:
 with open(f"config/language_{config['language']['default']}.ini", "r", encoding="utf-8") as f:
     language = pyini.ConfigParser(f.read())
 
+SCALE = int(config["window"]["screen_zoom"]) / 100
+
 clock = pygame.time.Clock()
 drag = False
 rel = [0, 0]
 scale = 1
 paused = False
 
-size = width, height = (1000, 1000)
+size = width, height = (1000 / SCALE, 1000 / SCALE)
+screen = pygame.display.set_mode(size)
+
 movement = 10
-SCALE = int(config["window"]["screen_zoom"]) / 100
-screen = pygame.display.set_mode((width / SCALE, height / SCALE))
 
 pygame.display.set_icon(pygame.image.load(config["window"]["icon"]))
 pygame.display.set_caption("Pygame 天体运动模拟")
@@ -213,7 +215,7 @@ while running:
                 filepath = fd.asksaveasfilename(
                     initialdir=os.path.dirname(__file__),
                     defaultextension=".png",
-                    filetypes=(("png", "*.png"), )
+                    filetypes=((language["game"]["picture"] % "PNG", "*.png"), )
                 )
                 if filepath:
                     pygame.image.save(screen, filepath)
