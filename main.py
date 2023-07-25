@@ -1,7 +1,6 @@
-import os
-
 import pygame
 import pyini
+import os
 import tkinter as tk
 import tkinter.filedialog as fd
 from time import sleep
@@ -35,12 +34,12 @@ class StarSprite(pygame.sprite.Sprite):
         self.image.fill((0, 0, 0, 0))
         pygame.draw.circle(self.image, color, (radius, radius), radius, 0)
         self.rect = self.image.get_rect()
-        self.rect.center = self.star.x, self.star.y
+        self.flush()
 
     def flush(self):
-        self.rect.centerx = (self.star.x + rel[0]) * scale
-        self.rect.centery = (self.star.y + rel[1]) * scale
-        self.trail.append((self.star.x, self.star.y))
+        self.rect.centerx = (self.star.x + rel[0]) * scale / SCALE
+        self.rect.centery = (self.star.y + rel[1]) * scale / SCALE
+        self.trail.append((self.star.x / SCALE, self.star.y / SCALE))
 
     def __repr__(self):
         return self.name
@@ -51,9 +50,7 @@ class Message(pygame.sprite.Sprite):
     def __init__(self, text, pos):
         pygame.sprite.Sprite.__init__(self)
         self._text = text
-        self.image = font.render(text, False, (255, 255, 255))
-        self.rect = self.image.get_rect()
-        self.rect.topright = pos
+        self.flush(pos)
 
     @property
     def text(self):
@@ -63,9 +60,13 @@ class Message(pygame.sprite.Sprite):
     def text(self, text):
         pos = self.rect.topright
         self._text = text
-        self.image = font.render(text, False, (255, 255, 255))
+        self.flush(pos)
+
+    def flush(self, pos):
+        self.image = font.render(self._text, False, (255, 255, 255))
+        self.image = pygame.transform.scale(self.image, [x / SCALE for x in self.image.get_size()])
         self.rect = self.image.get_rect()
-        self.rect.topright = pos
+        self.rect.topright = [x / SCALE for x in pos]
 
 def get_distance(sprite1, sprite2):
     x1, y1 = sprite1.star.x, sprite1.star.y
@@ -150,12 +151,16 @@ with open("config/config.ini", "r", encoding="utf-8") as f:
 with open(f"config/language_{config['language']['default']}.ini", "r", encoding="utf-8") as f:
     language = pyini.ConfigParser(f.read())
 
+clock = pygame.time.Clock()
+drag = False
+rel = [0, 0]
+scale = 1
+paused = False
+
 size = width, height = (1000, 1000)
 movement = 10
-screen = pygame.display.set_mode(
-    (width // (int(config["window"]["screen_zoom"]) // 100),
-     height // (int(config["window"]["screen_zoom"]) // 100))
-)
+SCALE = int(config["window"]["screen_zoom"]) / 100
+screen = pygame.display.set_mode((width / SCALE, height / SCALE))
 
 pygame.display.set_icon(pygame.image.load(config["window"]["icon"]))
 pygame.display.set_caption("Pygame 天体运动模拟")
@@ -163,14 +168,9 @@ pygame.display.set_caption("Pygame 天体运动模拟")
 with open(f"simulation/{config['simulation']['file']}.fishc", "r", encoding="utf-8") as f:
     sprites = eval(f.read())
 
-font = pygame.font.SysFont("Microsoft YaHei UI", 30)
+font = pygame.font.SysFont("Microsoft YaHei UI", 20)
 message = Message("", (width - 10, 10))
 
-clock = pygame.time.Clock()
-drag = False
-rel = [0, 0]
-scale = 1
-paused = False
 running = True
 while running:
     screen.fill((0, 0, 0))

@@ -1,7 +1,5 @@
 # Pygame 天体运动模拟
 
-# 注：运行前请将系统缩放率调成 100%（Windows）
-
 ## 简介
 
 这是一个天体运动模拟程序。
@@ -12,12 +10,6 @@
 pip install pyini pygame
 ```
 
-**相关链接**
-
-[预告通知](https://fishc.com.cn/thread-231221-1-1.html)
-
-> 求支持！求评分！您的评分是我最大的动力！
-
 ## 版本信息
 
 目前仍未发布正式版。下载方式：
@@ -26,9 +18,9 @@ pip install pyini pygame
 
 > `git clone https://github.com/dddddgz/star-motion-simulate`
 
-这样的话可以使用 `git pull` 来更新。
+这样就会有 `.git` 文件夹，可以使用 [Git](https://git-scm.com/) 进行操作。
 
-第二种：可以点击 “Code” 旁边的 “Download Zip”  
+第二种：可以点击 Code 按钮，然后点击“Download Zip”下载此项目的 `zip` 版本。  
 
 第三种：如果以上方法都不可行，请[提出 Issue](https://github.com/dddddgz/star-motion-simulate/issues/new/choose)
 
