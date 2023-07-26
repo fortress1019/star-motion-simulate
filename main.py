@@ -39,7 +39,12 @@ class StarSprite(pygame.sprite.Sprite):
     def flush(self):
         self.rect.centerx = (self.star.x + rel[0]) * scale
         self.rect.centery = (self.star.y + rel[1]) * scale
+
+    def add_to_trail(self):
         self.trail.append((self.star.x, self.star.y))
+        print(len(self.trail))
+        if len(self.trail) > 100:
+            self.trail.pop(0)
 
     def __repr__(self):
         return self.name
@@ -122,6 +127,8 @@ def move(t):
         sprite1.flush()
     for sprite in sprites_to_delete:
         sprites.remove(sprite)
+    for sprite in sprites:
+        sprite.add_to_trail()
 
 def is_collide(sprite1, sprite2):
     r1, r2 = sprite1.radius, sprite2.radius
@@ -183,6 +190,7 @@ while running:
         trail = list(map(lambda point: ((point[0] + rel[0]) * scale, (point[1] + rel[1]) * scale), trail))
         pygame.draw.lines(screen, sprite.color, False, trail, 2)
     for sprite in sprites:
+        sprite.flush()
         image = sprite.image
         image = pygame.transform.scale(image, (sprite.radius * 2 * scale,) * 2)
         screen.blit(image, sprite.rect)
