@@ -37,8 +37,8 @@ class StarSprite(pygame.sprite.Sprite):
         self.flush()
 
     def flush(self):
-        self.rect.centerx = (self.star.x + rel[0]) * scale / SCALE
-        self.rect.centery = (self.star.y + rel[1]) * scale / SCALE
+        self.rect.centerx = (self.star.x + rel[0]) * scale
+        self.rect.centery = (self.star.y + rel[1]) * scale
         self.trail.append((self.star.x, self.star.y))
 
     def __repr__(self):
@@ -64,7 +64,6 @@ class Message(pygame.sprite.Sprite):
 
     def flush(self, pos):
         self.image = font.render(self._text, False, (255, 255, 255))
-        self.image = pygame.transform.scale(self.image, [x / SCALE for x in self.image.get_size()])
         self.rect = self.image.get_rect()
         self.rect.topright = pos
 
@@ -77,11 +76,8 @@ def get_distance(sprite1, sprite2):
 
 def disappear_message(delay=5, interval=0.09):
     sleep(delay)
-    while message.text:
-        try:
-            message.text = message.text[:-1]
-        except pygame.error:
-            return
+    while message.text and running:
+        message.text = message.text[:-1]
         sleep(interval)
 
 def move(t):
@@ -131,12 +127,16 @@ def is_collide(sprite1, sprite2):
     r1, r2 = sprite1.radius, sprite2.radius
     return r1 + r2 > get_distance(sprite1, sprite2)
 
-def zoom(direction, each=0.01):
+def zoom(direction, each=0.02):
     global scale
     if direction > 0:
         scale += each
+        if scale > 10:
+            scale = 10
     elif direction < 0:
         scale -= each
+        if scale < 0.02:
+            scale = 0.02
     message.text = language["game"]["zoom"] % scale
     Thread(target=disappear_message).start()
 
@@ -151,15 +151,13 @@ with open("config/config.ini", "r", encoding="utf-8") as f:
 with open(f"config/language_{config['language']['default']}.ini", "r", encoding="utf-8") as f:
     language = pyini.ConfigParser(f.read())
 
-SCALE = int(config["window"]["screen_zoom"]) / 100
-
 clock = pygame.time.Clock()
 drag = False
 rel = [0, 0]
 scale = 1
 paused = False
 
-size = width, height = (1000 / SCALE, 1000 / SCALE)
+size = width, height = (1000, 1000)
 screen = pygame.display.set_mode(size)
 
 movement = 10
@@ -218,18 +216,20 @@ while running:
                 filepath = fd.asksaveasfilename(
                     initialdir=os.path.dirname(__file__),
                     defaultextension=".png",
-                    filetypes=((language["game"]["picture"] % "PNG", "*.png"), )
+                    filetypes=(
+                        (language["save"]["picture"] % "PNG", "*.png"),
+                         language["save"]["other"], "*")
                 )
                 if filepath:
                     pygame.image.save(screen, filepath)
                 root.destroy()
-            elif event.key in (pygame.K_LEFT, pygame.K_a, pygame.K_KP_4):
+            elif event.key in (pygame.K_LEFT, pygame.K_KP_4):
                 change_view(movement, 0)
-            elif event.key in (pygame.K_RIGHT, pygame.K_d, pygame.K_KP_6):
+            elif event.key in (pygame.K_RIGHT, pygame.K_KP_6):
                 change_view(-movement, 0)
-            elif event.key in (pygame.K_UP, pygame.K_w, pygame.K_KP_8):
+            elif event.key in (pygame.K_UP, pygame.K_KP_8):
                 change_view(0, movement)
-            elif event.key in (pygame.K_DOWN, pygame.K_s, pygame.K_KP_2):
+            elif event.key in (pygame.K_DOWN, pygame.K_KP_2):
                 change_view(0, -movement)
             elif event.key in (pygame.K_EQUALS, pygame.K_KP_PLUS):
                 zoom(1)
