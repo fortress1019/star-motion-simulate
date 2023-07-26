@@ -3,20 +3,35 @@ import pyini
 import os
 import tkinter as tk
 import tkinter.filedialog as fd
-from time import sleep
+from math import isclose
+from time import sleep, time
 from threading import Thread
 pygame.init()
 pygame.key.set_repeat(1000, 50)
 
 G = 6
 
+class TrailPoint(tuple):
+    def __init__(self, pos):
+        tuple.__init__(self)
+        self.pos = pos
+        self.time = time()
+
+    def __iter__(self):
+        yield self.pos[0]
+        yield self.pos[1]
+
+    def get_time(self):
+        return time() - self.time
+
 class StarObject:
-    def __init__(self, x, y, vx, vy, mass):
+    def __init__(self, x, y, vx, vy, mass, locked=False):
         self.x = x
         self.y = y
         self.vx = vx
         self.vy = vy
         self.mass = mass
+        self.locked = locked
 
     @property
     def info(self):
@@ -41,10 +56,10 @@ class StarSprite(pygame.sprite.Sprite):
         self.rect.centery = (self.star.y + rel[1]) * scale
 
     def add_to_trail(self):
-        self.trail.append((self.star.x, self.star.y))
-        print(len(self.trail))
-        if len(self.trail) > 100:
-            self.trail.pop(0)
+        self.trail.append(TrailPoint((self.star.x, self.star.y)))
+        for point in self.trail:
+            if point.get_time() > 1:
+                self.trail.remove(point)
 
     def __repr__(self):
         return self.name
@@ -79,7 +94,7 @@ def get_distance(sprite1, sprite2):
     dy = y2 - y1
     return (dx ** 2 + dy ** 2) ** 0.5
 
-def disappear_message(delay=5, interval=0.09):
+def disappear_message(delay=1, interval=0.09):
     sleep(delay)
     while message.text and running:
         message.text = message.text[:-1]
@@ -113,6 +128,8 @@ def move(t):
                 Thread(target=disappear_message).start()
                 break
             f = G * m1 * m2 / (r ** 2)
+            if isclose(f, 0):
+                continue
             accel = f / m1
             ax1 += accel * (dx / r)
             ay1 += accel * (dy / r)
@@ -121,9 +138,10 @@ def move(t):
             y1 + vy1 * t + 0.5 * ay1 * (t ** 2)
         )
         tempx, tempy = star1.x, star1.y
-        star1.x, star1.y = x, y
-        star1.vx = (x - tempx) / t
-        star1.vy = (y - tempy) / t
+        if not star1.locked:
+            star1.x, star1.y = x, y
+            star1.vx = (x - tempx) / t
+            star1.vy = (y - tempy) / t
         sprite1.flush()
     for sprite in sprites_to_delete:
         sprites.remove(sprite)
@@ -151,6 +169,7 @@ def change_view(move_x, move_y):
     rel[0] += move_x
     rel[1] += move_y
     message.text = language["game"]["rel"] % str(tuple(rel))
+    Thread(target=disappear_message).start()
 
 with open("config/config.ini", "r", encoding="utf-8") as f:
     config = pyini.ConfigParser(f.read())
@@ -158,19 +177,19 @@ with open("config/config.ini", "r", encoding="utf-8") as f:
 with open(f"config/language_{config['language']['default']}.ini", "r", encoding="utf-8") as f:
     language = pyini.ConfigParser(f.read())
 
+size = width, height = (1000, 1000)
+
 clock = pygame.time.Clock()
 drag = False
 rel = [0, 0]
 scale = 1
 paused = False
 
-size = width, height = (1000, 1000)
 screen = pygame.display.set_mode(size)
 
 movement = 10
-
 pygame.display.set_icon(pygame.image.load(config["window"]["icon"]))
-pygame.display.set_caption("Pygame Star Motion Simulate")
+pygame.display.set_caption(language["game"]["title"])
 
 with open(f"simulation/{config['simulation']['file']}.simulation", "r", encoding="utf-8") as f:
     sprites = eval(f.read())

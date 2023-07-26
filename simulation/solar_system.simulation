@@ -1,0 +1,6 @@
+[
+    StarSprite("sun", StarObject(500, 500, 0, 0, 1e4, True), 50, "yellow"),
+    StarSprite("mercury", StarObject(600, 500, 0, 16, 1), 3, "gray"),
+    StarSprite("venus", StarObject(625, 500, 0, 16, 1.5), 4.5, "orange"),
+    StarSprite("earth", StarObject(650, 500, 0, 15, 1.5), 5, "blue"),
+]

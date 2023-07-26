@@ -4,10 +4,16 @@
 
 这是一个天体运动模拟程序。
 
+**⚠ 注意！该项目在 Windows 上运行时需要 100% 的缩放比例。如果缩放比例不正确可能会导致体验不佳。**
+
 准备：
 
-```commandline
-pip install pyini pygame
+```
+# macOS
+python3 -m pip install pyini pygame
+
+# Windows
+python -m pip install pyini pygame
 ```
 
 ## 版本信息
@@ -18,7 +24,9 @@ pip install pyini pygame
 
 > `git clone https://github.com/dddddgz/star-motion-simulate`
 
-这样就会有 `.git` 文件夹，可以使用 [Git](https://git-scm.com/) 进行操作。
+这样就会有 `.git` 文件夹，可以使用 [Git](https://git-scm.com) 进行操作。
+
+第二种：使用 [GitHub Desktop](https://desktop.github.com)
 
 第二种：可以点击 Code 按钮，然后点击“Download Zip”下载此项目的 `zip` 版本。  
 
