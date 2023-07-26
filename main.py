@@ -39,7 +39,7 @@ class StarSprite(pygame.sprite.Sprite):
     def flush(self):
         self.rect.centerx = (self.star.x + rel[0]) * scale / SCALE
         self.rect.centery = (self.star.y + rel[1]) * scale / SCALE
-        self.trail.append((self.star.x / SCALE, self.star.y / SCALE))
+        self.trail.append((self.star.x, self.star.y))
 
     def __repr__(self):
         return self.name
@@ -165,9 +165,9 @@ screen = pygame.display.set_mode(size)
 movement = 10
 
 pygame.display.set_icon(pygame.image.load(config["window"]["icon"]))
-pygame.display.set_caption("Pygame 天体运动模拟")
+pygame.display.set_caption("Pygame Star Motion Simulate")
 
-with open(f"simulation/{config['simulation']['file']}.fishc", "r", encoding="utf-8") as f:
+with open(f"simulation/{config['simulation']['file']}.simulation", "r", encoding="utf-8") as f:
     sprites = eval(f.read())
 
 font = pygame.font.SysFont("Microsoft YaHei UI", 20)
@@ -188,7 +188,10 @@ while running:
         image = sprite.image
         image = pygame.transform.scale(image, (sprite.radius * 2 * scale,) * 2)
         screen.blit(image, sprite.rect)
-    screen.blit(message.image, message.rect)
+    try:
+        screen.blit(message.image, message.rect)
+    except pygame.error:
+        pass
     pygame.display.flip()
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
