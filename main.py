@@ -1,124 +1,23 @@
-import pygame
-import pyini
+# objects.py is already imported pygame
+import pyini                    # need install
 import os
 import tkinter as tk
 import tkinter.filedialog as fd
 from math import isclose
-from time import sleep, time
+from time import sleep
 from threading import Thread
-from typing import *
+from objects import *
+
 pygame.init()
 pygame.key.set_repeat(1000, 50)
 
 # Constant of gravitation
 G = 6
 
-class TrailPoint(tuple):
-    def __init__(self, pos):
-        tuple.__init__(self)
-        self.pos = pos
-        self.time = time()
 
-    def __iter__(self):
-        yield self.pos[0]
-        yield self.pos[1]
-
-    def get_time(self):
-        return time() - self.time
-
-class StarObject:
-    def __init__(self, x, y, vx, vy, mass, locked=False):
-        self.x = x
-        self.y = y
-        self.vx = vx
-        self.vy = vy
-        self.mass = mass
-        self.locked = locked
-
-
-class Star(pygame.sprite.Sprite):
-    def __init__(self,
-            name: str,
-            radius: int,
-            color: Any,
-            x: float,
-            y: float,
-            vx: float,
-            vy: float,
-            mass: float,
-            locked=False):
-        """
-        A star
-        :param name: name of star
-        :param radius: radius of star
-        :param color: color of star
-        :param x: x pos of star
-        :param y: y pos of star
-        :param vx: x velocity of star
-        :param vy: y velocity of star
-        :param mass: mass of star
-        :param locked: is star locked
-        """
-        pygame.sprite.Sprite.__init__(self)
-        self.name = name
-        self.x = x
-        self.y = y
-        self.vx = vx
-        self.vy = vy
-        self.mass = mass
-        self.locked = locked
-        self.radius = radius
-        self.color = color
-        self.trail = []
-        self.image = pygame.Surface((radius * 2, radius * 2)).convert_alpha()
-        self.image.fill((0, 0, 0, 0))
-        pygame.draw.circle(self.image, color, (radius, radius), radius, 0)
-        self.rect = self.image.get_rect()
-        self.flush()
-
-    def __repr__(self):
-        return self.name
-
-    __str__ = __repr__
-
-    @property
-    def info(self):
-        return self.x, self.y, self.vx, self.vy, self.mass
-
-    def flush(self):
-        self.rect.centerx = (self.x + rel[0]) * scale
-        self.rect.centery = (self.y + rel[1]) * scale
-
-    def add_to_trail(self):
-        self.trail.append(TrailPoint((self.x, self.y)))
-        for point in self.trail:
-            if point.get_time() > 1:
-                self.trail.remove(point)
-
-class Message(pygame.sprite.Sprite):
-    def __init__(self, text, pos):
-        pygame.sprite.Sprite.__init__(self)
-        self._text = text
-        self.flush(pos)
-
-    @property
-    def text(self):
-        return self._text
-
-    @text.setter
-    def text(self, text):
-        pos = self.rect.topright
-        self._text = text
-        self.flush(pos)
-
-    def flush(self, pos):
-        self.image = font.render(self._text, False, (255, 255, 255))
-        self.rect = self.image.get_rect()
-        self.rect.topright = pos
-
-def get_distance(sprite1, sprite2):
-    x1, y1 = sprite1.star.x, sprite1.star.y
-    x2, y2 = sprite2.star.x, sprite2.star.y
+def get_distance(sprite1: Star, sprite2: Star):
+    x1, x2 = sprite1.x, sprite2.x
+    y1, y2 = sprite1.y, sprite2.y
     dx = x2 - x1
     dy = y2 - y1
     return (dx ** 2 + dy ** 2) ** 0.5
@@ -146,11 +45,13 @@ def move(t):
             dy = y2 - y1
             r = get_distance(sprite1, sprite2)
             if is_collide(sprite1, sprite2):
+                print(sprite1.info, sprite2.info)
+                print(r)
                 heavier = sprite1 if sprite1.mass > sprite2.mass else sprite2
                 lighter = sprite2 if heavier is sprite1 else sprite1
                 sprites_to_delete.append(lighter)
-                heavier.star.vx += lighter.star.vx
-                heavier.star.vy += lighter.star.vy
+                heavier.vx += lighter.vx
+                heavier.vy += lighter.vy
                 message.text = language["star"]["collide"] % (heavier, lighter)
                 Thread(target=disappear_message).start()
                 break
@@ -180,22 +81,21 @@ def is_collide(sprite1, sprite2):
     return r1 + r2 > get_distance(sprite1, sprite2)
 
 def zoom(direction, each=0.02):
-    global scale
     if direction > 0:
-        scale += each
-        if scale > 10:
-            scale = 10
+        GameConfig.scale += each
+        if GameConfig.scale > 10:
+            GameConfig.scale = 10
     elif direction < 0:
-        scale -= each
-        if scale < 0.02:
-            scale = 0.02
-    message.text = language["game"]["zoom"] % scale
+        GameConfig.scale -= each
+        if GameConfig.scale < 0.02:
+            GameConfig.scale = 0.02
+    message.text = language["game"]["zoom"] % GameConfig.scale
     Thread(target=disappear_message).start()
 
 def change_view(move_x, move_y):
-    rel[0] += move_x
-    rel[1] += move_y
-    message.text = language["game"]["rel"] % str(tuple(rel))
+    GameConfig.rel[0] += move_x
+    GameConfig.rel[1] += move_y
+    message.text = language["game"]["rel"] % str(tuple(GameConfig.rel))
     Thread(target=disappear_message).start()
 
 with open("config/config.ini", "r", encoding="utf-8") as f:
@@ -208,8 +108,6 @@ size = width, height = (1000, 1000)
 
 clock = pygame.time.Clock()
 drag = False
-rel = [0, 0]
-scale = 1
 paused = False
 
 screen = pygame.display.set_mode(size)
@@ -221,7 +119,6 @@ pygame.display.set_caption(language["game"]["title"])
 with open(f"simulation/{config['simulation']['file']}.simulation", "r", encoding="utf-8") as f:
     sprites = eval(f.read())
 
-font = pygame.font.SysFont("Microsoft YaHei UI", 20)
 message = Message("", (width - 10, 10))
 
 running = True
@@ -233,12 +130,12 @@ while running:
     for sprite, trail in map(lambda xxx: (xxx, xxx.trail), sprites):
         if len(trail) < 2:
             continue
-        trail = list(map(lambda point: ((point[0] + rel[0]) * scale, (point[1] + rel[1]) * scale), trail))
+        trail = list(map(lambda point: ((point[0] + GameConfig.rel[0]) * GameConfig.scale, (point[1] + GameConfig.rel[1]) * GameConfig.scale), trail))
         pygame.draw.lines(screen, sprite.color, False, trail, 2)
     for sprite in sprites:
         sprite.flush()
         image = sprite.image
-        image = pygame.transform.scale(image, (sprite.radius * 2 * scale,) * 2)
+        image = pygame.transform.scale(image, (sprite.radius * 2 * GameConfig.scale,) * 2)
         screen.blit(image, sprite.rect)
     try:
         screen.blit(message.image, message.rect)
@@ -270,9 +167,9 @@ while running:
                 filepath = fd.asksaveasfilename(
                     initialdir=os.path.dirname(__file__),
                     defaultextension=".png",
-                    filetypes=(
+                    filetypes=[
                         (language["save"]["picture"] % "PNG", "*.png"),
-                         language["save"]["other"], "*")
+                         (language["save"]["other"], "*.*")]
                 )
                 if filepath:
                     pygame.image.save(screen, filepath)
