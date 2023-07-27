@@ -2,7 +2,7 @@ import pyini
 import os
 import tkinter as tk
 import tkinter.filedialog as fd
-import itertools
+from rich.console import Console
 from math import isclose
 from time import sleep
 from threading import Thread
@@ -13,6 +13,9 @@ pygame.key.set_repeat(1000, 50)
 
 # Constant of gravitation
 G = 6
+
+# rich Console
+console = Console()
 
 def get_distance(sprite1: Star, sprite2: Star):
     x1, x2 = sprite1.x, sprite2.x
@@ -49,7 +52,10 @@ def move(t):
                 sprites_to_delete.append(lighter)
                 heavier.vx += lighter.vx
                 heavier.vy += lighter.vy
-                message.text = language["star"]["collide"] % (heavier, lighter)
+                temp = language["star"]["collide"] % (heavier, lighter)
+                message.text = temp
+                console.log(temp)
+                del temp
                 Thread(target=disappear_message).start()
                 break
             f = G * m1 * m2 / (r ** 2)
@@ -67,6 +73,7 @@ def move(t):
             sprite1.x, sprite1.y = x, y
             sprite1.vx = (x - tempx) / t
             sprite1.vy = (y - tempy) / t
+        del tempx, tempy
         sprite1.flush()
     for sprite in sprites_to_delete:
         sprites.remove(sprite)
@@ -91,14 +98,14 @@ def zoom(direction, each=0.02):
     :return: None
     """
     if direction > 0:
-        GameConfig.scale += each
-        if GameConfig.scale > 10:
-            GameConfig.scale = 10
+        Config.scale += each
+        if Config.scale > 10:
+            Config.scale = 10
     elif direction < 0:
-        GameConfig.scale -= each
-        if GameConfig.scale < 0.02:
-            GameConfig.scale = 0.02
-    message.text = language["game"]["zoom"] % GameConfig.scale
+        Config.scale -= each
+        if Config.scale < 0.02:
+            Config.scale = 0.02
+    message.text = language["game"]["zoom"] % Config.scale
     Thread(target=disappear_message).start()
 
 def change_view(move_x, move_y):
@@ -108,9 +115,9 @@ def change_view(move_x, move_y):
     :param move_y: rel y
     :return: None
     """
-    GameConfig.rel[0] += move_x
-    GameConfig.rel[1] += move_y
-    message.text = language["game"]["rel"] % str(tuple(GameConfig.rel))
+    Config.rel[0] += move_x
+    Config.rel[1] += move_y
+    message.text = language["game"]["rel"] % str(tuple(Config.rel))
     Thread(target=disappear_message).start()
 
 # Read main config file
@@ -153,13 +160,13 @@ while running:
     for sprite, trail in map(lambda xxx: (xxx, xxx.trail), sprites):
         if len(trail) < 2:
             continue
-        trail = list(map(lambda point: ((point[0] + GameConfig.rel[0]) * GameConfig.scale, (point[1] + GameConfig.rel[1]) * GameConfig.scale), trail))
+        trail = list(map(lambda point: ((point[0] + Config.rel[0]) * Config.scale, (point[1] + Config.rel[1]) * Config.scale), trail))
         pygame.draw.lines(screen, sprite.color, False, trail, 2)
     for sprite in sprites:
         sprite: Star
         sprite.flush()
         image = sprite.image
-        image = pygame.transform.scale(image, (sprite.radius * 2 * GameConfig.scale,) * 2)
+        image = pygame.transform.scale(image, (sprite.radius * 2 * Config.scale,) * 2)
         screen.blit(image, sprite.rect)
         screen.blit(sprite.text, sprite.rect.topright)
     try:
@@ -194,7 +201,7 @@ while running:
                     defaultextension=".png",
                     filetypes=[
                         (language["save"]["picture"] % "PNG", "*.png"),
-                         (language["save"]["other"], "*.*")]
+                        (language["save"]["other"], "*.*")]
                 )
                 if filepath:
                     pygame.image.save(screen, filepath)

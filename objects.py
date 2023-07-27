@@ -7,10 +7,11 @@ number = Union[float, int]
 
 pygame.init()
 
-class GameConfig:
-    rel: list[int]         = [0, 0]
-    scale: number          = 1
-    font: pygame.font.Font = pygame.font.SysFont("Microsoft YaHei UI", 20)
+class Config:
+    rel  : list[int]        = [0, 0]
+    scale: number           = 1
+    font : pygame.font.Font = pygame.font.SysFont("Microsoft YaHei UI", 20)
+
 
 class TrailPoint(tuple):
     def __init__(self, pos):
@@ -60,7 +61,7 @@ class Star(pygame.sprite.Sprite):
         self.radius: number           = radius
         self.color : Any              = color
         self.trail : list[TrailPoint] = []
-        self.text  : pygame.Surface   = GameConfig.font.render(self.name, False, (128, 128, 128))
+        self.text  : pygame.Surface   = Config.font.render(self.name, False, (128, 128, 128))
         self.image:  pygame.Surface   = pygame.Surface((radius * 2, radius * 2)).convert_alpha()
         # Make it transparent
         self.image.fill((0, 0, 0, 0))
@@ -78,8 +79,8 @@ class Star(pygame.sprite.Sprite):
         return self.x, self.y, self.vx, self.vy, self.mass
 
     def flush(self):
-        self.rect.centerx = (self.x + GameConfig.rel[0]) * GameConfig.scale
-        self.rect.centery = (self.y + GameConfig.rel[1]) * GameConfig.scale
+        self.rect.centerx = (self.x + Config.rel[0]) * Config.scale
+        self.rect.centery = (self.y + Config.rel[1]) * Config.scale
         for point in self.trail:
             if point.get_time() > 1:
                 self.trail.remove(point)
@@ -104,6 +105,6 @@ class Message(pygame.sprite.Sprite):
         self.flush(pos)
 
     def flush(self, pos):
-        self.image = GameConfig.font.render(self._text, False, (255, 255, 255))
+        self.image = Config.font.render(self._text, False, (255, 255, 255))
         self.rect = self.image.get_rect()
         self.rect.topright = pos
