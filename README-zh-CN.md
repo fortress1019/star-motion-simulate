@@ -4,7 +4,7 @@
 
 这是一个天体运动模拟程序。
 
-**⚠ 注意！该项目在 Windows 上运行时需要 100% 的缩放比例。如果缩放比例不正确可能会导致体验不佳。**
+**⚠ 注意！该项目在 *Windows* 上运行时需要 100% 的缩放比例。如果缩放比例不正确可能会导致体验不佳。**
 
 准备：
 
@@ -18,29 +18,33 @@ python -m pip install pyini pygame
 
 ## 版本信息
 
-目前仍未发布正式版。下载方式：
+⚠ 注意：目前仍未发布正式版。如果您要体验最新的代码效果：
 
-第一种(***推荐***)：在终端执行 `git clone` 命令：
+下载方法一(***推荐***)：`git clone https://github.com/dddddgz/star-motion-simulate`
 
-> `git clone https://github.com/dddddgz/star-motion-simulate`
+下载方法二：使用 [GitHub Desktop](https://desktop.github.com) 去下载
 
-这样就会有 `.git` 文件夹，可以使用 [Git](https://git-scm.com) 进行操作。
+下载方法三：点击 Code 按钮，然后点击“Download Zip”下载此项目的 `zip` 版本。  
 
-第二种：使用 [GitHub Desktop](https://desktop.github.com)
+> 如果以上方法都不可行，请[创建一个 Issue](https://github.com/dddddgz/star-motion-simulate/issues/new/choose)
 
-第二种：可以点击 Code 按钮，然后点击“Download Zip”下载此项目的 `zip` 版本。  
-
-第三种：如果以上方法都不可行，请[提出 Issue](https://github.com/dddddgz/star-motion-simulate/issues/new/choose)
-
-## 项目配置
+## 项目设置
 
 ### 语言设置
 
-如果默认的语言（英语）不是你希望显示的语言（~~肯定不是~~），则你可以打开 `config/config.ini`，找到 `[language]`下的 `default` 选项，将它更改为你希望显示语言（如 zh-cn）。
+如果你希望更改游戏的语言，则你可以打开 `config/config.ini`，找到 `[language]`下的 `default` 选项，将它更改为你希望显示语言（如 `zh-CN`）。
 
 ### 加载模拟
 
-在 `config/config.ini` 里找到 `[simulation]` 部分，将 `file` 选项更改为你想加载的模拟（在 `simulation` 目录下有很多模拟，随便选择一个，复制它的文件名，并且*去掉扩展名*粘贴到 <span style="font-family: 'Consolas', 'Courier New';">=</span> 后面。
+按下面的步骤执行：
+
+1. 打开 `simulation` 文件夹
+2. 选择一个你想要使用的文件
+3. 复制它的文件名（*不要复制后缀名*）
+4. 打开 `config/config.ini`
+5. 找到 `[simulation]` 下的 `file` 部分
+6. 粘贴文件名
+7. 运行程序（如果程序已经在运行，关闭再运行它）
 
 ## 操作说明
 

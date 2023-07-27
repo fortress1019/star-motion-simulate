@@ -1,13 +1,11 @@
-# Warning! Don't download file now! Code has a big change!
-
 # Pygame Star Motion Simulate
 
 ## Contributors
 
-| Rank |      Name      |               Reason               |           Github Username           |
-|:----:|:--------------:|:----------------------------------:|:-----------------------------------:|
-|  1   | hellomyprogram | Fixed 2 bug & Propose 9 suggestion |           hehe-minecraft            |
-|  2   |  cjjJasonchen  |     Fixed 3 bugs & Support me      | (he/she doesn't have GitHub account |
+| Rank |      Name      |               Reason               |                   Github Username                   |
+|:----:|:--------------:|:----------------------------------:|:---------------------------------------------------:|
+|  1   | hellomyprogram | Fixed 2 bug & Propose 9 suggestion | [hehe-minecraft](https://github.com/hehe-minecraft) |
+|  2   |  cjjJasonchen  |     Fixed 3 bugs & Support me      |        (he/she doesn't have GitHub account)         |
 
 ## View documents of this project
 

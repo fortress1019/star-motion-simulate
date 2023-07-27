@@ -2,6 +2,7 @@ import pyini
 import os
 import tkinter as tk
 import tkinter.filedialog as fd
+import itertools
 from math import isclose
 from time import sleep
 from threading import Thread
@@ -67,6 +68,38 @@ def move(t):
             sprite1.vx = (x - tempx) / t
             sprite1.vy = (y - tempy) / t
         sprite1.flush()
+    # for sprite1, sprite2 in itertools.permutations(sprites, 2):
+    #     x1, y1, vx1, vy1, m1 = sprite1.info
+    #     ax1, ay1 = 0, 0
+    #     x2, y2, vx2, vy2, m2 = sprite2.info
+    #     dx = x2 - x1
+    #     dy = y2 - y1
+    #     r = get_distance(sprite1, sprite2)
+    #     if is_collide(sprite1, sprite2):
+    #         heavier = sprite1 if sprite1.mass > sprite2.mass else sprite2
+    #         lighter = sprite2 if heavier is sprite1 else sprite1
+    #         sprites_to_delete.append(lighter)
+    #         heavier.vx += lighter.vx
+    #         heavier.vy += lighter.vy
+    #         message.text = language["star"]["collide"] % (heavier, lighter)
+    #         Thread(target=disappear_message).start()
+    #         break
+    #     f = G * m1 * m2 / (r ** 2)
+    #     if isclose(f, 0):
+    #         continue
+    #     accel = f / m1
+    #     ax1 += accel * (dx / r)
+    #     ay1 += accel * (dy / r)
+    #     x, y = (
+    #         x1 + vx1 * t + 0.5 * ax1 * (t ** 2),
+    #         y1 + vy1 * t + 0.5 * ay1 * (t ** 2)
+    #     )
+    #     tempx, tempy = sprite1.x, sprite1.y
+    #     if True:
+    #         sprite1.x, sprite1.y = x, y
+    #         sprite1.vx = (x - tempx) / t
+    #         sprite1.vy = (y - tempy) / t
+    #     sprite1.flush()
     for sprite in sprites_to_delete:
         sprites.remove(sprite)
     for sprite in sprites:
@@ -74,7 +107,7 @@ def move(t):
 
 def is_collide(sprite1, sprite2):
     """
-    check 2 sprites is collided or no
+    check if 2 sprites is collided
     :param sprite1: sprite1
     :param sprite2: sprite2
     :return: None
