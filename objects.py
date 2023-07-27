@@ -2,12 +2,15 @@ import pygame
 from time import time
 from typing import *
 
+# number type -> float or int
+number = Union[float, int]
+
 pygame.init()
 
 class GameConfig:
-    rel = [0, 0]
-    scale = 1
-    font = pygame.font.SysFont("Microsoft YaHei UI", 20)
+    rel: list[int]         = [0, 0]
+    scale: number          = 1
+    font: pygame.font.Font = pygame.font.SysFont("Microsoft YaHei UI", 20)
 
 class TrailPoint(tuple):
     def __init__(self, pos):
@@ -24,15 +27,16 @@ class TrailPoint(tuple):
 
 class Star(pygame.sprite.Sprite):
     def __init__(self,
-            name: str,
-            radius: int,
-            color: Any,
-            x: float,
-            y: float,
-            vx: float,
-            vy: float,
-            mass: float,
-            locked=False):
+                 name:   str,
+                 radius: number,
+                 color:  Any,
+                 x:      number,
+                 y:      float,
+                 vx:     number,
+                 vy:     number,
+                 mass:   number,
+                 locked: bool = False
+                 ):
         """
         A star
         :param name: name of star
@@ -46,20 +50,21 @@ class Star(pygame.sprite.Sprite):
         :param locked: is star locked
         """
         pygame.sprite.Sprite.__init__(self)
-        self.name = name
-        self.x = x
-        self.y = y
-        self.vx = vx
-        self.vy = vy
-        self.mass = mass
-        self.locked = locked
-        self.radius = radius
-        self.color = color
-        self.trail = []
-        self.image = pygame.Surface((radius * 2, radius * 2)).convert_alpha()
+        self.name:   str              = name
+        self.x:      number           = x
+        self.y:      number           = y
+        self.vx:     number           = vx
+        self.vy:     number           = vy
+        self.mass:   number           = mass
+        self.locked: bool             = locked
+        self.radius: number           = radius
+        self.color:  Any              = color
+        self.trail:  list[TrailPoint] = []
+        self.image:  pygame.Surface   = pygame.Surface((radius * 2, radius * 2)).convert_alpha()
+        # Make it transparent
         self.image.fill((0, 0, 0, 0))
         pygame.draw.circle(self.image, color, (radius, radius), radius, 0)
-        self.rect = self.image.get_rect()
+        self.rect:   pygame.Rect      = self.image.get_rect()
         self.flush()
 
     def __repr__(self):
@@ -74,12 +79,12 @@ class Star(pygame.sprite.Sprite):
     def flush(self):
         self.rect.centerx = (self.x + GameConfig.rel[0]) * GameConfig.scale
         self.rect.centery = (self.y + GameConfig.rel[1]) * GameConfig.scale
-
-    def add_to_trail(self):
-        self.trail.append(TrailPoint((self.x, self.y)))
         for point in self.trail:
             if point.get_time() > 1:
                 self.trail.remove(point)
+
+    def add_to_trail(self):
+        self.trail.append(TrailPoint((self.x, self.y)))
 
 class Message(pygame.sprite.Sprite):
     def __init__(self, text, pos):

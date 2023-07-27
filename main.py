@@ -1,5 +1,4 @@
-# objects.py is already imported pygame
-import pyini                    # need install
+import pyini
 import os
 import tkinter as tk
 import tkinter.filedialog as fd
@@ -14,7 +13,6 @@ pygame.key.set_repeat(1000, 50)
 # Constant of gravitation
 G = 6
 
-
 def get_distance(sprite1: Star, sprite2: Star):
     x1, x2 = sprite1.x, sprite2.x
     y1, y2 = sprite1.y, sprite2.y
@@ -22,7 +20,7 @@ def get_distance(sprite1: Star, sprite2: Star):
     dy = y2 - y1
     return (dx ** 2 + dy ** 2) ** 0.5
 
-def disappear_message(delay=1, interval=0.09):
+def disappear_message(delay: number = 1, interval: number = 0.09):
     sleep(delay)
     while message.text and running:
         message.text = message.text[:-1]
@@ -45,8 +43,6 @@ def move(t):
             dy = y2 - y1
             r = get_distance(sprite1, sprite2)
             if is_collide(sprite1, sprite2):
-                print(sprite1.info, sprite2.info)
-                print(r)
                 heavier = sprite1 if sprite1.mass > sprite2.mass else sprite2
                 lighter = sprite2 if heavier is sprite1 else sprite1
                 sprites_to_delete.append(lighter)
@@ -66,7 +62,7 @@ def move(t):
             y1 + vy1 * t + 0.5 * ay1 * (t ** 2)
         )
         tempx, tempy = sprite1.x, sprite1.y
-        if not sprite1.locked:
+        if True:
             sprite1.x, sprite1.y = x, y
             sprite1.vx = (x - tempx) / t
             sprite1.vy = (y - tempy) / t
@@ -77,10 +73,22 @@ def move(t):
         sprite.add_to_trail()
 
 def is_collide(sprite1, sprite2):
+    """
+    check 2 sprites is collided or no
+    :param sprite1: sprite1
+    :param sprite2: sprite2
+    :return: None
+    """
     r1, r2 = sprite1.radius, sprite2.radius
     return r1 + r2 > get_distance(sprite1, sprite2)
 
 def zoom(direction, each=0.02):
+    """
+    zoom size
+    :param direction: nagative (small) / positive (big)
+    :param each: zoom size
+    :return: None
+    """
     if direction > 0:
         GameConfig.scale += each
         if GameConfig.scale > 10:
@@ -93,14 +101,22 @@ def zoom(direction, each=0.02):
     Thread(target=disappear_message).start()
 
 def change_view(move_x, move_y):
+    """
+    change view (rel)
+    :param move_x: rel x
+    :param move_y: rel y
+    :return: None
+    """
     GameConfig.rel[0] += move_x
     GameConfig.rel[1] += move_y
     message.text = language["game"]["rel"] % str(tuple(GameConfig.rel))
     Thread(target=disappear_message).start()
 
+# Read main config file
 with open("config/config.ini", "r", encoding="utf-8") as f:
     config = pyini.ConfigParser(f.read())
 
+# Read config file with language
 with open(f"config/language_{config['language']['default']}.ini", "r", encoding="utf-8") as f:
     language = pyini.ConfigParser(f.read())
 
@@ -109,6 +125,7 @@ size = width, height = (1000, 1000)
 clock = pygame.time.Clock()
 drag = False
 paused = False
+disappearing = False
 
 screen = pygame.display.set_mode(size)
 
