@@ -6,9 +6,11 @@ import tkinter.filedialog as fd
 from math import isclose
 from time import sleep, time
 from threading import Thread
+from typing import *
 pygame.init()
 pygame.key.set_repeat(1000, 50)
 
+# Constant of gravitation
 G = 6
 
 class TrailPoint(tuple):
@@ -33,15 +35,38 @@ class StarObject:
         self.mass = mass
         self.locked = locked
 
-    @property
-    def info(self):
-        return self.x, self.y, self.vx, self.vy, self.mass
 
-class StarSprite(pygame.sprite.Sprite):
-    def __init__(self, name, star, radius, color):
+class Star(pygame.sprite.Sprite):
+    def __init__(self,
+            name: str,
+            radius: int,
+            color: Any,
+            x: float,
+            y: float,
+            vx: float,
+            vy: float,
+            mass: float,
+            locked=False):
+        """
+        A star
+        :param name: name of star
+        :param radius: radius of star
+        :param color: color of star
+        :param x: x pos of star
+        :param y: y pos of star
+        :param vx: x velocity of star
+        :param vy: y velocity of star
+        :param mass: mass of star
+        :param locked: is star locked
+        """
         pygame.sprite.Sprite.__init__(self)
         self.name = name
-        self.star = star
+        self.x = x
+        self.y = y
+        self.vx = vx
+        self.vy = vy
+        self.mass = mass
+        self.locked = locked
         self.radius = radius
         self.color = color
         self.trail = []
@@ -51,20 +76,24 @@ class StarSprite(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.flush()
 
-    def flush(self):
-        self.rect.centerx = (self.star.x + rel[0]) * scale
-        self.rect.centery = (self.star.y + rel[1]) * scale
-
-    def add_to_trail(self):
-        self.trail.append(TrailPoint((self.star.x, self.star.y)))
-        for point in self.trail:
-            if point.get_time() > 1:
-                self.trail.remove(point)
-
     def __repr__(self):
         return self.name
 
     __str__ = __repr__
+
+    @property
+    def info(self):
+        return self.x, self.y, self.vx, self.vy, self.mass
+
+    def flush(self):
+        self.rect.centerx = (self.x + rel[0]) * scale
+        self.rect.centery = (self.y + rel[1]) * scale
+
+    def add_to_trail(self):
+        self.trail.append(TrailPoint((self.x, self.y)))
+        for point in self.trail:
+            if point.get_time() > 1:
+                self.trail.remove(point)
 
 class Message(pygame.sprite.Sprite):
     def __init__(self, text, pos):
@@ -103,23 +132,21 @@ def disappear_message(delay=1, interval=0.09):
 def move(t):
     sprites_to_delete = []
     for sprite1 in sprites:
-        star1 = sprite1.star
-        x1, y1, vx1, vy1, m1 = star1.info
+        x1, y1, vx1, vy1, m1 = sprite1.info
         ax1, ay1 = 0, 0
         if sprite1 in sprites_to_delete:
             continue
         for sprite2 in sprites:
-            star2 = sprite2.star
             if sprite1 in sprites_to_delete or sprite2 in sprites_to_delete:
                 break
-            if star1 is star2:
+            if sprite1 is sprite2:
                 continue
-            x2, y2, vx2, vy2, m2 = star2.info
+            x2, y2, vx2, vy2, m2 = sprite2.info
             dx = x2 - x1
             dy = y2 - y1
             r = get_distance(sprite1, sprite2)
             if is_collide(sprite1, sprite2):
-                heavier = sprite1 if star1.mass > star2.mass else sprite2
+                heavier = sprite1 if sprite1.mass > sprite2.mass else sprite2
                 lighter = sprite2 if heavier is sprite1 else sprite1
                 sprites_to_delete.append(lighter)
                 heavier.star.vx += lighter.star.vx
@@ -137,11 +164,11 @@ def move(t):
             x1 + vx1 * t + 0.5 * ax1 * (t ** 2),
             y1 + vy1 * t + 0.5 * ay1 * (t ** 2)
         )
-        tempx, tempy = star1.x, star1.y
-        if not star1.locked:
-            star1.x, star1.y = x, y
-            star1.vx = (x - tempx) / t
-            star1.vy = (y - tempy) / t
+        tempx, tempy = sprite1.x, sprite1.y
+        if not sprite1.locked:
+            sprite1.x, sprite1.y = x, y
+            sprite1.vx = (x - tempx) / t
+            sprite1.vy = (y - tempy) / t
         sprite1.flush()
     for sprite in sprites_to_delete:
         sprites.remove(sprite)
@@ -229,7 +256,7 @@ while running:
                 drag = False
             elif event.button == 4:
                 zoom(1)
-            else:
+            elif event.button == 5:
                 zoom(-1)
         elif event.type == pygame.MOUSEMOTION:
             if drag:

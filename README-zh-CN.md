@@ -36,11 +36,11 @@ python -m pip install pyini pygame
 
 ### 语言设置
 
-如果默认的语言（英语）不是你希望显示的语言（~~肯定不是~~），则你可以打开 `config/config.ini`，找到 <span style="color: #9b2393; font-family: 'Consolas', 'Courier New';"><b>[language]</b></span> 下的 <span style="color: #9b2393; font-family: 'Consolas', 'Courier New';">default</span> 选项，将它更改为你希望显示语言（如 zh-cn）。
+如果默认的语言（英语）不是你希望显示的语言（~~肯定不是~~），则你可以打开 `config/config.ini`，找到 `[language]`下的 `default` 选项，将它更改为你希望显示语言（如 zh-cn）。
 
 ### 加载模拟
 
-在 `config/config.ini` 里找到 <span style="color: #9b2393; font-family: 'Consolas', 'Courier New';"><b>[simulation]</b></span> 部分，将 <span style="color: #9b2393; font-family: 'Consolas', 'Courier New';">file</span> 选项更改为你想加载的模拟（在 `simulation` 目录下有很多模拟，随便选择一个，复制它的文件名，并且*去掉扩展名*粘贴到 <span style="font-family: 'Consolas', 'Courier New';">=</span> 后面。
+在 `config/config.ini` 里找到 `[simulation]` 部分，将 `file` 选项更改为你想加载的模拟（在 `simulation` 目录下有很多模拟，随便选择一个，复制它的文件名，并且*去掉扩展名*粘贴到 <span style="font-family: 'Consolas', 'Courier New';">=</span> 后面。
 
 ## 操作说明
 
