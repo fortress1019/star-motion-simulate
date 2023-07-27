@@ -63,43 +63,11 @@ def move(t):
             y1 + vy1 * t + 0.5 * ay1 * (t ** 2)
         )
         tempx, tempy = sprite1.x, sprite1.y
-        if True:
+        if not sprite1.locked:
             sprite1.x, sprite1.y = x, y
             sprite1.vx = (x - tempx) / t
             sprite1.vy = (y - tempy) / t
         sprite1.flush()
-    # for sprite1, sprite2 in itertools.permutations(sprites, 2):
-    #     x1, y1, vx1, vy1, m1 = sprite1.info
-    #     ax1, ay1 = 0, 0
-    #     x2, y2, vx2, vy2, m2 = sprite2.info
-    #     dx = x2 - x1
-    #     dy = y2 - y1
-    #     r = get_distance(sprite1, sprite2)
-    #     if is_collide(sprite1, sprite2):
-    #         heavier = sprite1 if sprite1.mass > sprite2.mass else sprite2
-    #         lighter = sprite2 if heavier is sprite1 else sprite1
-    #         sprites_to_delete.append(lighter)
-    #         heavier.vx += lighter.vx
-    #         heavier.vy += lighter.vy
-    #         message.text = language["star"]["collide"] % (heavier, lighter)
-    #         Thread(target=disappear_message).start()
-    #         break
-    #     f = G * m1 * m2 / (r ** 2)
-    #     if isclose(f, 0):
-    #         continue
-    #     accel = f / m1
-    #     ax1 += accel * (dx / r)
-    #     ay1 += accel * (dy / r)
-    #     x, y = (
-    #         x1 + vx1 * t + 0.5 * ax1 * (t ** 2),
-    #         y1 + vy1 * t + 0.5 * ay1 * (t ** 2)
-    #     )
-    #     tempx, tempy = sprite1.x, sprite1.y
-    #     if True:
-    #         sprite1.x, sprite1.y = x, y
-    #         sprite1.vx = (x - tempx) / t
-    #         sprite1.vy = (y - tempy) / t
-    #     sprite1.flush()
     for sprite in sprites_to_delete:
         sprites.remove(sprite)
     for sprite in sprites:
@@ -153,16 +121,21 @@ with open("config/config.ini", "r", encoding="utf-8") as f:
 with open(f"config/language_{config['language']['default']}.ini", "r", encoding="utf-8") as f:
     language = pyini.ConfigParser(f.read())
 
+# Window size
 size = width, height = (1000, 1000)
 
-clock = pygame.time.Clock()
-drag = False
-paused = False
-disappearing = False
+# fps manager
+clock:  pygame.time.Clock = pygame.time.Clock()
 
+# MOUSEBUTTONDOWN + MOUSEMOTION = drag
+drag:   bool              = False
+# if game is paused
+paused: bool              = False
+
+# Main screen
 screen = pygame.display.set_mode(size)
 
-movement = 10
+movement: number = 10
 pygame.display.set_icon(pygame.image.load(config["window"]["icon"]))
 pygame.display.set_caption(language["game"]["title"])
 
@@ -183,10 +156,12 @@ while running:
         trail = list(map(lambda point: ((point[0] + GameConfig.rel[0]) * GameConfig.scale, (point[1] + GameConfig.rel[1]) * GameConfig.scale), trail))
         pygame.draw.lines(screen, sprite.color, False, trail, 2)
     for sprite in sprites:
+        sprite: Star
         sprite.flush()
         image = sprite.image
         image = pygame.transform.scale(image, (sprite.radius * 2 * GameConfig.scale,) * 2)
         screen.blit(image, sprite.rect)
+        screen.blit(sprite.text, sprite.rect.topright)
     try:
         screen.blit(message.image, message.rect)
     except pygame.error:

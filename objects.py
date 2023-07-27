@@ -50,16 +50,17 @@ class Star(pygame.sprite.Sprite):
         :param locked: is star locked
         """
         pygame.sprite.Sprite.__init__(self)
-        self.name:   str              = name
-        self.x:      number           = x
-        self.y:      number           = y
-        self.vx:     number           = vx
-        self.vy:     number           = vy
-        self.mass:   number           = mass
+        self.name  : str              = name
+        self.x     : number           = x
+        self.y     : number           = y
+        self.vx    : number           = vx
+        self.vy    : number           = vy
+        self.mass  : number           = mass
         self.locked: bool             = locked
         self.radius: number           = radius
-        self.color:  Any              = color
-        self.trail:  list[TrailPoint] = []
+        self.color : Any              = color
+        self.trail : list[TrailPoint] = []
+        self.text  : pygame.Surface   = GameConfig.font.render(self.name, False, (128, 128, 128))
         self.image:  pygame.Surface   = pygame.Surface((radius * 2, radius * 2)).convert_alpha()
         # Make it transparent
         self.image.fill((0, 0, 0, 0))
