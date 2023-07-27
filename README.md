@@ -4,10 +4,10 @@
 
 ## Contributors
 
-| Rank |      Name      |               Reason               |
-|:----:|:--------------:|:----------------------------------:|
-|   1  | hellomyprogram | Fixed 2 bug & Propose 9 suggestion |
-|   2  |  cjjJasonchen  |     Fixed 3 bugs & Support me      |
+| Rank |      Name      |               Reason               |           Github Username           |
+|:----:|:--------------:|:----------------------------------:|:-----------------------------------:|
+|  1   | hellomyprogram | Fixed 2 bug & Propose 9 suggestion |           hehe-minecraft            |
+|  2   |  cjjJasonchen  |     Fixed 3 bugs & Support me      | (he/she doesn't have GitHub account |
 
 ## View documents of this project
 
