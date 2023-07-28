@@ -1,8 +1,9 @@
 import pygame
 from time import time
 from typing import *
+from typing import List as list, Tuple as tuple
 
-# number type -> float or int
+# Number type -> float or int
 number = Union[float, int]
 
 pygame.init()

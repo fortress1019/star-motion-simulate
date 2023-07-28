@@ -108,7 +108,7 @@ def move(t):
 
 def is_collide(sprite1, sprite2):
     """
-    check if 2 sprites is collided
+    Check if 2 sprites is collided
     :param sprite1: sprite1
     :param sprite2: sprite2
     :return: None
@@ -118,8 +118,8 @@ def is_collide(sprite1, sprite2):
 
 def zoom(direction, each=0.02):
     """
-    zoom size
-    :param direction: nagative (small) / positive (big)
+    Zoom size
+    :param direction: nagative (zoom out) / positive (zoom in)
     :param each: zoom size
     :return: None
     """
@@ -159,7 +159,6 @@ size = width, height = (1000, 1000)
 
 # fps manager
 clock:  pygame.time.Clock = pygame.time.Clock()
-
 # MOUSEBUTTONDOWN + MOUSEMOTION = drag
 drag:   bool              = False
 # if game is paused
@@ -219,6 +218,10 @@ while running:
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
                 paused = not paused
+                message.text = [
+                    language["config"]["resume"],
+                    language["config"]["pause"]
+                ][paused]
             elif event.mod & pygame.KMOD_CTRL and event.key == pygame.K_s:
                 root = tk.Tk()
                 root.withdraw()
