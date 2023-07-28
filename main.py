@@ -24,8 +24,8 @@ class MessageThread(Thread):
         Thread.__init__(self)
 
     def run(self, delay=2, interval=0.05):
-        if MessageThread.running:
-            Thread(target=self.wait_until_run).start()
+        # if MessageThread.running:
+        #     Thread(target=self.wait_until_run).start()
         MessageThread.running = True
         sleep(delay)
         while message.text and running:
@@ -33,9 +33,9 @@ class MessageThread(Thread):
             sleep(interval)
         MessageThread.running = False
 
-    def wait_until_run(self):
-        while self.__class__.running:
-            pass
+    # def wait_until_run(self):
+    #     while self.__class__.running:
+    #         pass
 
 def get_distance(sprite1: Star, sprite2: Star):
     x1, x2 = sprite1.x, sprite2.x
