@@ -17,18 +17,32 @@ G = 6
 # rich Console
 console = Console()
 
+class MessageThread(Thread):
+    running = False
+
+    def __init__(self):
+        Thread.__init__(self)
+
+    def run(self, delay=2, interval=0.05):
+        if MessageThread.running:
+            Thread(target=self.wait_until_run).start()
+        MessageThread.running = True
+        sleep(delay)
+        while message.text and running:
+            message.text = message.text[:-1]
+            sleep(interval)
+        MessageThread.running = False
+
+    def wait_until_run(self):
+        while self.__class__.running:
+            pass
+
 def get_distance(sprite1: Star, sprite2: Star):
     x1, x2 = sprite1.x, sprite2.x
     y1, y2 = sprite1.y, sprite2.y
     dx = x2 - x1
     dy = y2 - y1
     return (dx ** 2 + dy ** 2) ** 0.5
-
-def disappear_message(delay: number = 1, interval: number = 0.09):
-    sleep(delay)
-    while message.text and running:
-        message.text = message.text[:-1]
-        sleep(interval)
 
 def move(t):
     sprites_to_delete = []
@@ -56,7 +70,7 @@ def move(t):
                 message.text = temp
                 console.log(temp)
                 del temp
-                Thread(target=disappear_message).start()
+                MessageThread().start()
                 break
             f = G * m1 * m2 / (r ** 2)
             if isclose(f, 0):
@@ -106,7 +120,7 @@ def zoom(direction, each=0.02):
         if Config.scale < 0.02:
             Config.scale = 0.02
     message.text = language["game"]["zoom"] % Config.scale
-    Thread(target=disappear_message).start()
+    MessageThread().start()
 
 def change_view(move_x, move_y):
     """
@@ -118,7 +132,7 @@ def change_view(move_x, move_y):
     Config.rel[0] += move_x
     Config.rel[1] += move_y
     message.text = language["game"]["rel"] % str(tuple(Config.rel))
-    Thread(target=disappear_message).start()
+    MessageThread().start()
 
 # Read main config file
 with open("config/config.ini", "r", encoding="utf-8") as f:
