@@ -5,7 +5,7 @@ import tkinter.filedialog as fd
 from rich.console import Console
 from math import isclose
 from time import sleep
-from threading import Thread
+from threading import Thread, Event
 from objects import *
 
 pygame.init()
@@ -18,24 +18,36 @@ G = 6
 console = Console()
 
 class MessageThread(Thread):
-    running = False
-
     def __init__(self):
-        Thread.__init__(self)
+        super().__init__()
+        self._message = ""
+        self._message_changed = False
+        self._running = True
+        self._event = Event()
 
-    def run(self, delay=2, interval=0.05):
-        # if MessageThread.running:
-        #     Thread(target=self.wait_until_run).start()
-        MessageThread.running = True
-        sleep(delay)
-        while message.text and running:
-            message.text = message.text[:-1]
-            sleep(interval)
-        MessageThread.running = False
+    def run(self):
+        while self._running and running:
+            try:
+                self._event.clear()
+                sleep(2)
+                while self._message:
+                    assert not self._message_changed  # wait another 2 seconds if message changed.
+                    self._message = self._message[:-1]
+                    # ---> Render function <---
+                self._event.wait()
+            except AssertionError:
+                self._message_changed = False
+                continue
 
-    # def wait_until_run(self):
-    #     while self.__class__.running:
-    #         pass
+    @property
+    def message(self):
+        return self._message
+
+    @message.setter
+    def message(self, new_message):
+        self._message = new_message
+        self._message_changed = True
+        self._event.set()
 
 def get_distance(sprite1: Star, sprite2: Star):
     x1, x2 = sprite1.x, sprite2.x

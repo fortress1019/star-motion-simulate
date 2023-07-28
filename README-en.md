@@ -44,3 +44,12 @@ Do the following steps:
 5. Locate the `file` section under `[simulation]`
 6. Paste the file name
 7. Run the program (if the program is already running, close it and run it again)
+
+> You can also create your own simulations in the `simulation` folder. If you think it's good, you can fork this project and [submit a Pull Request](https://github.com/dddddgz/star-motion-simulate/pulls)
+
+## Instructions
+
+> This part introduces how to operate the program after it is running.
+
+- Zoom in/out: mouse wheel / + and - keys
+updaeting...
