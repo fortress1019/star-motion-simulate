@@ -4,7 +4,7 @@
 
 This is a celestial motion simulation program.
 
-**⚠ Notice! The project requires 100% scaling to run on *Windows*. Incorrect scaling can result in a poor experience.**
+**⚠ Attention! The project requires 100% scaling to run on *Windows*. Incorrect scaling can result in a poor experience.**
 
 Prepare:
 
@@ -15,18 +15,6 @@ python3 -m install pyini pygame
 # Windows
 python -m pip install pyini pygame
 ```
-## Version Information
-
-Note: The official version has not yet been released. Download method:
-
-Download method 1 (***Recommended***): `git clone https://github.com/dddddgz/star-motion-simulate`
-
-Download method 2: Use [GitHub Desktop](https://desktop.github.com) to download
-
-Download method 3: Click the Code button, then click "Download Zip" to download the `zip` version of this project.
-
-> If the above methods are not feasible, please [create an Issue](https://github.com/dddddgz/star-motion-simulate/issues/new/choose)
-
 ## Project Settings
 
 ### Language Settings

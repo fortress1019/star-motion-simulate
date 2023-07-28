@@ -16,18 +16,6 @@ python3 -m pip install pyini pygame
 python -m pip install pyini pygame
 ```
 
-## 版本信息
-
-⚠ 注意：目前仍未发布正式版。如果您要体验最新的代码效果：
-
-下载方法一(***推荐***)：`git clone https://github.com/dddddgz/star-motion-simulate`
-
-下载方法二：使用 [GitHub Desktop](https://desktop.github.com) 去下载
-
-下载方法三：点击 Code 按钮，然后点击“Download Zip”下载此项目的 `zip` 版本。  
-
-> 如果以上方法都不可行，请[创建一个 Issue](https://github.com/dddddgz/star-motion-simulate/issues/new/choose)
-
 ## 项目设置
 
 ### 语言设置
