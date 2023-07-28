@@ -6,15 +6,6 @@ This is a celestial motion simulation program.
 
 **⚠ Attention! The project requires 100% scaling to run on *Windows*. Incorrect scaling can result in a poor experience.**
 
-Prepare:
-
-```
-# macOS
-python3 -m install pyini pygame
-
-# Windows
-python -m pip install pyini pygame
-```
 ## Project Settings
 
 ### Language Settings

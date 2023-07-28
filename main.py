@@ -1,3 +1,6 @@
+import check_update
+del check_update
+
 import pyini
 import os
 import tkinter as tk

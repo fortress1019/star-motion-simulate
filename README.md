@@ -7,6 +7,10 @@
 |  1   | hellomyprogram | Fixed 3 bug & Propose 9 suggestion | [hehe-minecraft](https://github.com/hehe-minecraft) |
 |  2   |  cjjJasonchen  |     Fixed 3 bugs & Support me      |                       Unknown                       |
 
+## Install Packages
+
+Packages requires:
+
 ## View documents of this project
 
 - **LICENSE**: MIT license

@@ -6,16 +6,6 @@
 
 **⚠ 注意！该项目在 *Windows* 上运行时需要 100% 的缩放比例。如果缩放比例不正确可能会导致体验不佳。**
 
-准备：
-
-```
-# macOS
-python3 -m pip install pyini pygame
-
-# Windows
-python -m pip install pyini pygame
-```
-
 ## 项目设置
 
 ### 语言设置
